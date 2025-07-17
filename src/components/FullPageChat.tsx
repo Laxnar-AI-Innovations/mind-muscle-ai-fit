@@ -3,6 +3,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { ArrowLeft, Send, Brain, User } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
+import ProductRecommendation from "./ProductRecommendation";
 
 interface Message {
   id: number;
@@ -131,36 +132,48 @@ const FullPageChat = ({ onClose }: FullPageChatProps) => {
       <div className="flex-1 overflow-y-auto">
         <div className="max-w-4xl mx-auto px-4 py-6">
           <div className="space-y-6">
-            {messages.map((message) => (
-              <div
-                key={message.id}
-                className={`flex gap-4 ${message.isBot ? '' : 'flex-row-reverse'}`}
-              >
-                <div className={`w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0 ${
-                  message.isBot 
-                    ? 'bg-gradient-to-r from-primary to-neon-green' 
-                    : 'bg-muted'
-                }`}>
-                  {message.isBot ? (
-                    <Brain className="w-4 h-4 text-white" />
-                  ) : (
-                    <User className="w-4 h-4" />
-                  )}
-                </div>
-                <div className={`flex-1 max-w-2xl ${message.isBot ? '' : 'text-right'}`}>
-                  <div className={`inline-block p-4 rounded-lg ${
-                    message.isBot
-                      ? 'bg-muted text-foreground'
-                      : 'bg-gradient-to-r from-primary to-neon-green text-white'
-                  }`}>
-                    <div className="whitespace-pre-line">{message.text}</div>
+            {messages.map((message) => {
+              // Check if this bot message contains product recommendation
+              const hasProductRecommendation = message.isBot && 
+                (message.text.includes('{{X_BRAND}}') || 
+                 message.text.toLowerCase().includes('recommend') && 
+                 (message.text.toLowerCase().includes('protein') || message.text.toLowerCase().includes('supplement')));
+
+              return (
+                <div key={message.id}>
+                  <div className={`flex gap-4 ${message.isBot ? '' : 'flex-row-reverse'}`}>
+                    <div className={`w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0 ${
+                      message.isBot 
+                        ? 'bg-gradient-to-r from-primary to-neon-green' 
+                        : 'bg-muted'
+                    }`}>
+                      {message.isBot ? (
+                        <Brain className="w-4 h-4 text-white" />
+                      ) : (
+                        <User className="w-4 h-4" />
+                      )}
+                    </div>
+                    <div className={`flex-1 max-w-2xl ${message.isBot ? '' : 'text-right'}`}>
+                      <div className={`inline-block p-4 rounded-lg ${
+                        message.isBot
+                          ? 'bg-muted text-foreground'
+                          : 'bg-gradient-to-r from-primary to-neon-green text-white'
+                      }`}>
+                        <div className="whitespace-pre-line">{message.text}</div>
+                      </div>
+                      <div className="text-xs text-muted-foreground mt-1">
+                        {message.timestamp.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                      </div>
+                      
+                      {/* Show product recommendation if detected */}
+                      {hasProductRecommendation && (
+                        <ProductRecommendation />
+                      )}
+                    </div>
                   </div>
-                  <div className="text-xs text-muted-foreground mt-1">
-                    {message.timestamp.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
-                  </div>
                 </div>
-              </div>
-            ))}
+              );
+            })}
             
             {isTyping && (
               <div className="flex gap-4">
