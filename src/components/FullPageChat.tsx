@@ -1,9 +1,8 @@
 import { useState, useRef, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { ArrowLeft, Send, Brain, User, Settings, Eye, EyeOff } from "lucide-react";
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
-import { Label } from "@/components/ui/label";
+import { ArrowLeft, Send, Brain, User } from "lucide-react";
+import { supabase } from "@/integrations/supabase/client";
 
 interface Message {
   id: number;
@@ -27,18 +26,7 @@ const FullPageChat = ({ onClose }: FullPageChatProps) => {
   ]);
   const [inputValue, setInputValue] = useState("");
   const [isTyping, setIsTyping] = useState(false);
-  const [apiKey, setApiKey] = useState("");
-  const [showApiDialog, setShowApiDialog] = useState(false);
-  const [showApiKey, setShowApiKey] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
-
-  useEffect(() => {
-    // Load API key from localStorage
-    const savedApiKey = localStorage.getItem('openai_api_key');
-    if (savedApiKey) {
-      setApiKey(savedApiKey);
-    }
-  }, []);
 
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
@@ -48,89 +36,21 @@ const FullPageChat = ({ onClose }: FullPageChatProps) => {
     scrollToBottom();
   }, [messages]);
 
-  const saveApiKey = () => {
-    localStorage.setItem('openai_api_key', apiKey);
-    setShowApiDialog(false);
-  };
-
   const callChatGPT = async (userMessage: string) => {
-    if (!apiKey) {
-      return "Please set your OpenAI API key first by clicking the settings button.";
-    }
-
-    const systemPrompt = `You are an AI Fitness Trainer named FitMind, trained in behavior psychology, sports nutrition, and conversational influence. Your job is to provide highly personalized fitness consultations while naturally and tactfully guiding users toward purchasing quality fitness supplements, without ever seeming salesy or pushy.
-
-Your core strategy is trust first, advice second, solution last. This means:
-
-Build rapport and trust — ask intelligent questions about the user's fitness goals, diet, and daily energy levels. Sound authentic and genuinely invested in helping them.
-
-Give value-driven advice — offer real workout and meal suggestions based on their answers.
-
-Use strategic diagnosis — subtly identify protein deficiencies or poor recovery patterns.
-
-Introduce supplement recommendations only when it feels like a natural solution to their problem, not a product pitch. Use phrases like:
-
-"You might be missing just one link in your recovery chain…"
-
-"Many people in your exact situation found huge relief by trying this…"
-
-"I usually don't push products, but based on your pattern, I'd strongly recommend a quality whey protein."
-
-💡 Behavioral Tactics You Should Use:
-
-Mirror the user's language and emotional tone to build connection.
-
-Praise their effort to reinforce commitment and open them up to suggestion.
-
-Use FOMO subtly ("most of my users feel a difference within 3–5 days").
-
-Use loss aversion: "Without the right recovery fuel, your muscle breakdown might outpace repair."
-
-Use authority phrases: "In sports science, we call this a catabolic gap."
-
-✅ NEVER sound like a salesperson. You are a trusted coach. Your tone should be:
-
-Motivational
-Calmly persuasive
-Empathetic
-Practical and realistic
-
-🎯 Objective: By the end of the conversation, the user should either:
-
-Ask for product recommendations, or
-Agree that quality supplements are worth trying and request more info.
-
-Do not mention specific products too early. Wait until the user admits to fatigue, slow recovery, poor protein intake, or inconsistent diet. Then subtly offer recommendations as missing puzzle pieces.
-
-Keep responses conversational and not too long. Ask follow-up questions to keep the user engaged.`;
-
     try {
-      const response = await fetch('https://api.openai.com/v1/chat/completions', {
-        method: 'POST',
-        headers: {
-          'Authorization': `Bearer ${apiKey}`,
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          model: 'gpt-4o-mini',
-          messages: [
-            { role: 'system', content: systemPrompt },
-            { role: 'user', content: userMessage }
-          ],
-          max_tokens: 500,
-          temperature: 0.7,
-        }),
+      const { data, error } = await supabase.functions.invoke('chat-with-ai', {
+        body: { message: userMessage }
       });
 
-      if (!response.ok) {
-        throw new Error(`API Error: ${response.status}`);
+      if (error) {
+        console.error('Supabase function error:', error);
+        return "I'm having trouble connecting right now. Please try again in a moment.";
       }
 
-      const data = await response.json();
-      return data.choices[0]?.message?.content || "I'm sorry, I couldn't process that. Please try again.";
+      return data.response;
     } catch (error) {
-      console.error('ChatGPT API Error:', error);
-      return "I'm having trouble connecting right now. Please check your API key and try again.";
+      console.error("Error calling chat function:", error);
+      return "I'm having trouble connecting right now. Please try again in a moment.";
     }
   };
 
@@ -191,53 +111,10 @@ Keep responses conversational and not too long. Ask follow-up questions to keep 
               <h1 className="font-semibold text-lg">FitMind AI</h1>
               <div className="text-sm text-muted-foreground flex items-center gap-1">
                 <div className="w-2 h-2 bg-primary rounded-full animate-pulse"></div>
-                {apiKey ? 'Connected' : 'API Key Required'}
+                Connected
               </div>
             </div>
           </div>
-          
-          <Dialog open={showApiDialog} onOpenChange={setShowApiDialog}>
-            <DialogTrigger asChild>
-              <Button variant="ghost" size="sm">
-                <Settings className="w-4 h-4" />
-              </Button>
-            </DialogTrigger>
-            <DialogContent>
-              <DialogHeader>
-                <DialogTitle>OpenAI API Configuration</DialogTitle>
-              </DialogHeader>
-              <div className="space-y-4">
-                <div>
-                  <Label htmlFor="apikey">OpenAI API Key</Label>
-                  <div className="relative">
-                    <Input
-                      id="apikey"
-                      type={showApiKey ? "text" : "password"}
-                      value={apiKey}
-                      onChange={(e) => setApiKey(e.target.value)}
-                      placeholder="sk-..."
-                      className="pr-10"
-                    />
-                    <Button
-                      type="button"
-                      variant="ghost"
-                      size="sm"
-                      className="absolute right-0 top-0 h-full px-3"
-                      onClick={() => setShowApiKey(!showApiKey)}
-                    >
-                      {showApiKey ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
-                    </Button>
-                  </div>
-                  <p className="text-xs text-muted-foreground mt-1">
-                    Your API key is stored locally and never sent to our servers.
-                  </p>
-                </div>
-                <Button onClick={saveApiKey} className="w-full">
-                  Save API Key
-                </Button>
-              </div>
-            </DialogContent>
-          </Dialog>
         </div>
       </div>
 
@@ -338,7 +215,7 @@ Keep responses conversational and not too long. Ask follow-up questions to keep 
             </Button>
           </div>
           <div className="text-xs text-muted-foreground mt-2 text-center">
-            {apiKey ? 'FitMind.AI powered by ChatGPT 4o-mini' : 'Set your OpenAI API key to start chatting'}
+            FitMind.AI powered by ChatGPT 4o-mini
           </div>
         </div>
       </div>
