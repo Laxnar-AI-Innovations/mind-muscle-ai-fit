@@ -38,8 +38,17 @@ const FullPageChat = ({ onClose }: FullPageChatProps) => {
 
   const callChatGPT = async (userMessage: string) => {
     try {
+      // Convert messages to conversation history format for the API
+      const conversationHistory = messages.slice(1).map(msg => ({
+        role: msg.isBot ? 'assistant' : 'user',
+        content: msg.text
+      }));
+
       const { data, error } = await supabase.functions.invoke('chat-with-ai', {
-        body: { message: userMessage }
+        body: { 
+          message: userMessage,
+          conversationHistory: conversationHistory
+        }
       });
 
       if (error) {

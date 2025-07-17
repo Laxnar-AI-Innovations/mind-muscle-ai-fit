@@ -15,7 +15,7 @@ serve(async (req) => {
   }
 
   try {
-    const { message } = await req.json();
+    const { message, conversationHistory = [] } = await req.json();
 
     if (!openAIApiKey) {
       throw new Error('OpenAI API key not configured');
@@ -80,11 +80,10 @@ Agree that {{X_BRAND}} is worth trying and request more info.
 
 Do not mention {{X_BRAND}} too early. Wait until the user admits to fatigue, slow recovery, poor protein intake, or inconsistent diet. Then subtly offer it as a missing puzzle piece.
 
-Begin each session with:
-
-"Hey, I'm FitMind—your AI fitness coach. What's your current fitness goal?"`
-          },
-          { role: 'user', content: message }
+If this is the first message of the conversation, greet the user with: "Hey, I'm FitMind—your AI fitness coach. What's your current fitness goal?"`
+           },
+           ...conversationHistory,
+           { role: 'user', content: message }
         ],
         temperature: 0.7,
         max_tokens: 1000
