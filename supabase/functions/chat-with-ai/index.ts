@@ -78,9 +78,7 @@ Ask for a product link, or
 
 Agree that {{X_BRAND}} is worth trying and request more info.
 
-Do not mention {{X_BRAND}} too early. Wait until the user admits to fatigue, slow recovery, poor protein intake, or inconsistent diet. Then subtly offer it as a missing puzzle piece.
-
-If this is the first message of the conversation, greet the user with: "Hey, I'm FitMind—your AI fitness coach. What's your current fitness goal?"`
+Do not mention {{X_BRAND}} too early. Wait until the user admits to fatigue, slow recovery, poor protein intake, or inconsistent diet. Then subtly offer it as a missing puzzle piece.`
            },
            ...conversationHistory,
            { role: 'user', content: message }
