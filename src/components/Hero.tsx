@@ -1,7 +1,7 @@
 import { Button } from "@/components/ui/button";
 import { Zap, Brain, Activity } from "lucide-react";
 
-const Hero = () => {
+const Hero = ({ onOpenChat }: { onOpenChat: () => void }) => {
   return (
     <section className="relative min-h-screen flex items-center justify-center bg-gradient-to-br from-background via-dark-bg to-dark-card overflow-hidden">
       {/* Background Effects */}
@@ -39,7 +39,7 @@ const Hero = () => {
         <div className="flex justify-center">
           <Button 
             size="lg" 
-            onClick={() => window.dispatchEvent(new CustomEvent('openChat'))}
+            onClick={onOpenChat}
             className="text-lg px-8 py-6 bg-gradient-to-r from-primary to-neon-green hover:from-primary/90 hover:to-neon-green/90 transition-all duration-300 shadow-lg hover:shadow-xl transform hover:scale-105"
           >
             <Zap className="w-5 h-5 mr-2" />
