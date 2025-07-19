@@ -23,71 +23,73 @@ const ProductRecommendation = ({ productName = "USA Medical CBD Products", onLin
   return (
     <Card className="mt-6 border-2 border-primary/20 bg-gradient-to-br from-primary/5 to-primary/10 shadow-lg">
       <CardContent className="p-0">
-        <div className="flex flex-col md:flex-row">
+        <div className="flex flex-col lg:flex-row">
           {/* Product Image */}
-          <div className="md:w-1/3 p-4 flex items-center justify-center bg-background/30">
+          <div className="lg:w-1/2 p-8 flex items-center justify-center bg-background/30">
             <img 
               src="/lovable-uploads/e72d77ae-3d4e-43a1-9eb5-ae0f3bf48de0.png" 
               alt={productName}
-              className="w-full max-w-[200px] h-auto object-contain rounded-lg"
+              className="w-full max-w-[400px] h-auto object-contain rounded-lg"
             />
           </div>
           
           {/* Product Details */}
-          <div className="md:w-2/3 p-4 space-y-4">
-            <div className="space-y-2">
-              <div className="flex items-center gap-2">
-                <Badge variant="secondary" className="bg-primary/10 text-primary">
+          <div className="lg:w-1/2 p-8 space-y-6">
+            <div className="space-y-4">
+              <div className="flex items-center gap-3">
+                <Badge variant="secondary" className="bg-primary/10 text-primary text-base px-4 py-2">
                   Recommended by FitMind
                 </Badge>
                 <div className="flex items-center gap-1">
                   {[1, 2, 3, 4, 5].map((star) => (
-                    <Star key={star} className="h-3 w-3 fill-yellow-400 text-yellow-400" />
+                    <Star key={star} className="h-5 w-5 fill-yellow-400 text-yellow-400" />
                   ))}
-                  <span className="text-sm text-muted-foreground ml-1">(4.8/5)</span>
+                  <span className="text-base text-muted-foreground ml-2">(4.8/5)</span>
                 </div>
               </div>
-              <CardTitle className="text-xl">{productName}</CardTitle>
-              <CardDescription className="text-sm">
-                Professional-grade protein supplement specifically recommended based on your fitness goals and nutritional needs.
+              <CardTitle className="text-3xl">{productName}</CardTitle>
+              <CardDescription className="text-lg leading-relaxed">
+                Professional-grade organic supplements specifically recommended based on your fitness goals and nutritional needs.
               </CardDescription>
             </div>
 
-            <div className="grid grid-cols-3 gap-2 text-sm">
-              <div className="text-center p-3 bg-background/50 rounded-lg border">
-                <div className="font-bold text-primary text-lg">25g</div>
-                <div className="text-muted-foreground text-xs">Premium Protein</div>
+            <div className="grid grid-cols-3 gap-4">
+              <div className="text-center p-6 bg-background/50 rounded-lg border">
+                <div className="font-bold text-primary text-2xl">Lab</div>
+                <div className="text-muted-foreground text-sm">Certified</div>
               </div>
-              <div className="text-center p-3 bg-background/50 rounded-lg border">
-                <div className="font-bold text-primary text-lg">Fast</div>
-                <div className="text-muted-foreground text-xs">Absorption</div>
+              <div className="text-center p-6 bg-background/50 rounded-lg border">
+                <div className="font-bold text-primary text-2xl">Organic</div>
+                <div className="text-muted-foreground text-sm">Natural</div>
               </div>
-              <div className="text-center p-3 bg-background/50 rounded-lg border">
-                <div className="font-bold text-primary text-lg">30</div>
-                <div className="text-muted-foreground text-xs">Servings</div>
+              <div className="text-center p-6 bg-background/50 rounded-lg border">
+                <div className="font-bold text-primary text-2xl">Premium</div>
+                <div className="text-muted-foreground text-sm">Quality</div>
               </div>
             </div>
             
-            <div className="flex gap-3 pt-2">
+            <div className="flex gap-4 pt-4">
               <Button 
-                className="flex-1 gap-2 bg-gradient-to-r from-primary to-neon-green hover:from-primary/90 hover:to-neon-green/90" 
+                size="lg"
+                className="flex-1 gap-3 bg-gradient-to-r from-primary to-neon-green hover:from-primary/90 hover:to-neon-green/90 text-lg py-6" 
                 onClick={handleProductClick}
               >
-                <ShoppingCart className="h-4 w-4" />
+                <ShoppingCart className="h-5 w-5" />
                 Buy Now
-                <ExternalLink className="h-3 w-3" />
+                <ExternalLink className="h-4 w-4" />
               </Button>
               <Button 
+                size="lg"
                 variant="outline" 
-                className="gap-2 border-primary/20 hover:bg-primary/5" 
+                className="gap-3 border-primary/20 hover:bg-primary/5 text-lg py-6 px-8" 
                 onClick={handleLearnMoreClick}
               >
                 Learn More
-                <ExternalLink className="h-3 w-3" />
+                <ExternalLink className="h-4 w-4" />
               </Button>
             </div>
             
-            <div className="text-xs text-muted-foreground text-center pt-3 border-t border-primary/10">
+            <div className="text-sm text-muted-foreground text-center pt-6 border-t border-primary/10">
               💡 Personalized recommendation based on your fitness profile
             </div>
           </div>
