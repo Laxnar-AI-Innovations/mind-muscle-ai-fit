@@ -80,7 +80,7 @@ const Index = () => {
   return (
     <div className="min-h-screen bg-background">
       <div className="absolute top-4 right-4 z-50 flex items-center gap-2">
-        {user ? (
+        {user && (
           <div className="flex items-center gap-2 bg-background/80 backdrop-blur-sm rounded-lg px-3 py-2 border">
             <User className="h-4 w-4" />
             <span className="text-sm">{user.email}</span>
@@ -93,14 +93,6 @@ const Index = () => {
               <LogOut className="h-4 w-4" />
             </Button>
           </div>
-        ) : (
-          <Button 
-            onClick={handleGoogleSignIn}
-            className="bg-background/80 backdrop-blur-sm border"
-            variant="outline"
-          >
-            Sign in with Google
-          </Button>
         )}
       </div>
       
