@@ -54,17 +54,17 @@ const ProductRecommendation = ({ productName = "USA Medical CBD Products", onLin
             </div>
 
             <div className="grid grid-cols-3 gap-4">
-              <div className="text-center p-6 bg-background/50 rounded-lg border">
-                <div className="font-bold text-primary text-2xl">Lab</div>
-                <div className="text-muted-foreground text-sm">Certified</div>
+              <div className="text-center p-4 bg-background/50 rounded-lg border">
+                <div className="font-bold text-primary text-lg">Lab</div>
+                <div className="text-muted-foreground text-xs">Certified</div>
               </div>
-              <div className="text-center p-6 bg-background/50 rounded-lg border">
-                <div className="font-bold text-primary text-2xl">Organic</div>
-                <div className="text-muted-foreground text-sm">Natural</div>
+              <div className="text-center p-4 bg-background/50 rounded-lg border">
+                <div className="font-bold text-primary text-lg">Organic</div>
+                <div className="text-muted-foreground text-xs">Natural</div>
               </div>
-              <div className="text-center p-6 bg-background/50 rounded-lg border">
-                <div className="font-bold text-primary text-2xl">Premium</div>
-                <div className="text-muted-foreground text-sm">Quality</div>
+              <div className="text-center p-4 bg-background/50 rounded-lg border">
+                <div className="font-bold text-primary text-lg">Premium</div>
+                <div className="text-muted-foreground text-xs">Quality</div>
               </div>
             </div>
             
