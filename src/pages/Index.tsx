@@ -5,6 +5,7 @@ import Testimonials from "@/components/Testimonials";
 import AffiliateProducts from "@/components/AffiliateProducts";
 import ChatBot from "@/components/ChatBot";
 import Footer from "@/components/Footer";
+import ProductRecommendation from "@/components/ProductRecommendation";
 
 const Index = () => {
   const [showChat, setShowChat] = useState(false);
@@ -21,6 +22,10 @@ const Index = () => {
       <Hero onOpenChat={handleOpenChat} />
       <Features />
       <Testimonials />
+      <div className="container mx-auto px-4 py-8">
+        <h2 className="text-2xl font-bold text-center mb-8">Product Recommendation Preview</h2>
+        <ProductRecommendation onLinkClick={() => console.log('Product link clicked')} />
+      </div>
       <AffiliateProducts />
       <Footer />
     </div>
