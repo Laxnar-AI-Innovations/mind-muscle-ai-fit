@@ -2,14 +2,14 @@ import { ExternalLink, Star, ShoppingCart } from "lucide-react";
 import { Button } from "./ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "./ui/card";
 import { Badge } from "./ui/badge";
-import proteinPowder from "@/assets/protein-powder.jpg";
+// USA Medical products image will be loaded from uploads
 
 interface ProductRecommendationProps {
   productName?: string;
   onLinkClick?: () => void;
 }
 
-const ProductRecommendation = ({ productName = "Premium Protein Powder", onLinkClick }: ProductRecommendationProps) => {
+const ProductRecommendation = ({ productName = "USA Medical CBD Products", onLinkClick }: ProductRecommendationProps) => {
   const handleProductClick = () => {
     window.open('https://linksredirect.com/?cid=238930&source=linkkit&url=https%3A%2F%2Fusamedical.com%2Fen%2F', '_blank');
     onLinkClick?.();
@@ -27,7 +27,7 @@ const ProductRecommendation = ({ productName = "Premium Protein Powder", onLinkC
           {/* Product Image */}
           <div className="md:w-1/3 p-4 flex items-center justify-center bg-background/30">
             <img 
-              src={proteinPowder} 
+              src="/lovable-uploads/e72d77ae-3d4e-43a1-9eb5-ae0f3bf48de0.png" 
               alt={productName}
               className="w-full max-w-[200px] h-auto object-contain rounded-lg"
             />
