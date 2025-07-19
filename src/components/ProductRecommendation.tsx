@@ -11,12 +11,14 @@ interface ProductRecommendationProps {
 
 const ProductRecommendation = ({ productName = "Premium Protein Powder", onLinkClick }: ProductRecommendationProps) => {
   const handleProductClick = () => {
-    window.open('https://linksredirect.com/?cid=238930&source=linkkit&url=https%3A%2F%2Fusamedical.com%2Fen%2F', '_blank');
+    // Placeholder link - in real implementation this would be the actual product URL
+    window.open('https://example.com/product-link', '_blank');
     onLinkClick?.();
   };
 
   const handleLearnMoreClick = () => {
-    window.open('https://linksredirect.com/?cid=238930&source=linkkit&url=https%3A%2F%2Fusamedical.com%2Fen%2F', '_blank');
+    // Placeholder link - in real implementation this would be the product info page
+    window.open('https://example.com/learn-more', '_blank');
     onLinkClick?.();
   };
 

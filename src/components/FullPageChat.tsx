@@ -213,7 +213,7 @@ const FullPageChat = ({ onClose }: FullPageChatProps) => {
       </div>
 
       {/* Product Recommendation - appears outside conversation */}
-      {true && (
+      {showProductRecommendation && (
         <div className="border-t border-border bg-card/30 backdrop-blur-sm">
           <div className="max-w-4xl mx-auto px-4 py-6">
             <ProductRecommendation onLinkClick={() => console.log('Product link clicked')} />
