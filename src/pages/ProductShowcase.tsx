@@ -20,8 +20,12 @@ const ProductShowcase = () => {
           </p>
         </div>
 
-        <div className="max-w-4xl mx-auto">
+        <div className="max-w-4xl mx-auto space-y-8">
           <ProductRecommendation />
+          <ProductRecommendation 
+            productName="NuLeaf Naturals CBD Products"
+            affiliateLink="https://linksredirect.com/?cid=238930&source=linkkit&url=https%3A%2F%2Fnuleafnaturals.com%2F"
+          />
         </div>
       </div>
     </div>

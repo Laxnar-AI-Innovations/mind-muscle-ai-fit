@@ -7,16 +7,21 @@ import { Badge } from "./ui/badge";
 interface ProductRecommendationProps {
   productName?: string;
   onLinkClick?: () => void;
+  affiliateLink?: string;
 }
 
-const ProductRecommendation = ({ productName = "USA Medical CBD Products", onLinkClick }: ProductRecommendationProps) => {
+const ProductRecommendation = ({ 
+  productName = "USA Medical CBD Products", 
+  onLinkClick, 
+  affiliateLink = 'https://linksredirect.com/?cid=238930&source=linkkit&url=https%3A%2F%2Fusamedical.com%2Fen%2F'
+}: ProductRecommendationProps) => {
   const handleProductClick = () => {
-    window.open('https://linksredirect.com/?cid=238930&source=linkkit&url=https%3A%2F%2Fusamedical.com%2Fen%2F', '_blank');
+    window.open(affiliateLink, '_blank');
     onLinkClick?.();
   };
 
   const handleLearnMoreClick = () => {
-    window.open('https://linksredirect.com/?cid=238930&source=linkkit&url=https%3A%2F%2Fusamedical.com%2Fen%2F', '_blank');
+    window.open(affiliateLink, '_blank');
     onLinkClick?.();
   };
 
