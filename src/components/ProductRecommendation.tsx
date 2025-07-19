@@ -8,12 +8,14 @@ interface ProductRecommendationProps {
   productName?: string;
   onLinkClick?: () => void;
   affiliateLink?: string;
+  productImage?: string;
 }
 
 const ProductRecommendation = ({ 
   productName = "USA Medical CBD Products", 
   onLinkClick, 
-  affiliateLink = 'https://linksredirect.com/?cid=238930&source=linkkit&url=https%3A%2F%2Fusamedical.com%2Fen%2F'
+  affiliateLink = 'https://linksredirect.com/?cid=238930&source=linkkit&url=https%3A%2F%2Fusamedical.com%2Fen%2F',
+  productImage = "/lovable-uploads/e72d77ae-3d4e-43a1-9eb5-ae0f3bf48de0.png"
 }: ProductRecommendationProps) => {
   const handleProductClick = () => {
     window.open(affiliateLink, '_blank');
@@ -32,7 +34,7 @@ const ProductRecommendation = ({
           {/* Product Image */}
           <div className="lg:w-1/2 p-8 flex items-center justify-center bg-background/30">
             <img 
-              src="/lovable-uploads/e72d77ae-3d4e-43a1-9eb5-ae0f3bf48de0.png" 
+              src={productImage} 
               alt={productName}
               className="w-full max-w-[400px] h-auto object-contain rounded-lg"
             />

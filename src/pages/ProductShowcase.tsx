@@ -25,6 +25,7 @@ const ProductShowcase = () => {
           <ProductRecommendation 
             productName="NuLeaf Naturals CBD Products"
             affiliateLink="https://linksredirect.com/?cid=238930&source=linkkit&url=https%3A%2F%2Fnuleafnaturals.com%2F"
+            productImage="/lovable-uploads/0a8504f6-97aa-4925-8fc0-923f85dbc941.png"
           />
         </div>
       </div>
