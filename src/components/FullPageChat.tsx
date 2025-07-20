@@ -1,7 +1,7 @@
 import { useState, useRef, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { ArrowLeft, Send, Brain, User } from "lucide-react";
+import { ArrowLeft, Send, Brain, User, LogOut } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
 import { useUserProfile } from "@/hooks/useUserProfile";
@@ -19,7 +19,7 @@ interface FullPageChatProps {
 }
 
 const FullPageChat = ({ onClose }: FullPageChatProps) => {
-  const { user } = useAuth();
+  const { user, signOut } = useAuth();
   const { firstName } = useUserProfile();
   const [messages, setMessages] = useState<Message[]>([]);
   const [inputValue, setInputValue] = useState("");
@@ -278,6 +278,20 @@ const FullPageChat = ({ onClose }: FullPageChatProps) => {
               </div>
             </div>
           </div>
+
+          {user && (
+            <Button
+              variant="ghost"
+              onClick={async () => {
+                await signOut();
+                onClose();
+              }}
+              className="flex items-center gap-2 text-muted-foreground hover:text-foreground"
+            >
+              <LogOut className="w-4 h-4" />
+              <span className="hidden sm:inline">Logout</span>
+            </Button>
+          )}
         </div>
       </div>
 
