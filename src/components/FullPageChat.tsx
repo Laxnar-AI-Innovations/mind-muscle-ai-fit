@@ -235,10 +235,12 @@ const FullPageChat = ({ onClose }: FullPageChatProps) => {
   };
 
   const quickReplies = [
-    "I want to build muscle",
-    "Help me lose weight", 
-    "I'm always tired after workouts",
-    "Create a meal plan"
+    "I'm feeling stressed and anxious",
+    "I have trouble sleeping", 
+    "I experience chronic fatigue",
+    "How can I reduce inflammation?",
+    "Help with pain management",
+    "Improve my emotional balance"
   ];
 
   if (isLoading) {
