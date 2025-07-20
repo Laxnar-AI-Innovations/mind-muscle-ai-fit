@@ -67,9 +67,10 @@ const Index = () => {
               onClick={handleSignOut} 
               variant="ghost" 
               size="sm"
-              className="h-auto p-1"
+              className="h-auto px-2 py-1 text-xs"
             >
-              <LogOut className="h-4 w-4" />
+              <LogOut className="h-3 w-3 mr-1" />
+              Log out
             </Button>
           </div>
         )}
