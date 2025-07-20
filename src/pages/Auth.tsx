@@ -22,7 +22,7 @@ const Auth = () => {
 
   // Redirect if already authenticated
   if (user && !loading) {
-    return <Navigate to="/" replace />;
+    return <Navigate to="/dashboard" replace />;
   }
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -66,7 +66,7 @@ const Auth = () => {
           email,
           password,
           options: {
-            emailRedirectTo: `${window.location.origin}/`,
+            emailRedirectTo: `${window.location.origin}/dashboard`,
             data: {
               full_name: name.trim(),
               name: name.trim()
