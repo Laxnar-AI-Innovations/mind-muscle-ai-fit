@@ -47,15 +47,6 @@ const Hero = ({ onOpenChat }: { onOpenChat: () => void }) => {
         </p>
         
         <div className="flex flex-col items-center gap-4">
-          {!user && (
-            <Button 
-              onClick={handleSignIn}
-              className="bg-white hover:bg-gray-50 text-gray-900 border border-gray-300 shadow-md hover:shadow-lg transition-all duration-200 text-base px-6 py-3 font-medium"
-              size="lg"
-            >
-              Sign In / Sign Up
-            </Button>
-          )}
           
           <Button 
             size="lg" 
