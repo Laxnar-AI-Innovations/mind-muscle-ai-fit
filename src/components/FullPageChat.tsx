@@ -3,10 +3,11 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { ArrowLeft, Send, Brain, User } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
+import { useAuth } from "@/hooks/useAuth";
 import ProductRecommendation from "./ProductRecommendation";
 
 interface Message {
-  id: number;
+  id: string;
   text: string;
   isBot: boolean;
   timestamp: Date;
@@ -17,17 +18,13 @@ interface FullPageChatProps {
 }
 
 const FullPageChat = ({ onClose }: FullPageChatProps) => {
-  const [messages, setMessages] = useState<Message[]>([
-    {
-      id: 1,
-      text: "Hey, I'm FitMind—your AI fitness coach. What's your current fitness goal?",
-      isBot: true,
-      timestamp: new Date()
-    }
-  ]);
+  const { user } = useAuth();
+  const [messages, setMessages] = useState<Message[]>([]);
   const [inputValue, setInputValue] = useState("");
   const [isTyping, setIsTyping] = useState(false);
   const [showProductRecommendation, setShowProductRecommendation] = useState(false);
+  const [conversationId, setConversationId] = useState<string | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
   const scrollToBottom = () => {
@@ -37,6 +34,126 @@ const FullPageChat = ({ onClose }: FullPageChatProps) => {
   useEffect(() => {
     scrollToBottom();
   }, [messages]);
+
+  // Load chat history when component mounts
+  useEffect(() => {
+    if (user) {
+      loadChatHistory();
+    } else {
+      // Show welcome message for non-authenticated users
+      setMessages([{
+        id: 'welcome',
+        text: "Hey, I'm FitMind—your AI fitness coach. What's your current fitness goal?",
+        isBot: true,
+        timestamp: new Date()
+      }]);
+      setIsLoading(false);
+    }
+  }, [user]);
+
+  const loadChatHistory = async () => {
+    if (!user) return;
+
+    try {
+      // Get or create a conversation for this user
+      let { data: conversations, error: convError } = await supabase
+        .from('chat_conversations')
+        .select('id')
+        .eq('user_id', user.id)
+        .order('updated_at', { ascending: false })
+        .limit(1);
+
+      if (convError) {
+        console.error('Error loading conversations:', convError);
+        return;
+      }
+
+      let currentConversationId: string;
+
+      if (conversations && conversations.length > 0) {
+        currentConversationId = conversations[0].id;
+      } else {
+        // Create new conversation
+        const { data: newConversation, error: createError } = await supabase
+          .from('chat_conversations')
+          .insert({
+            user_id: user.id,
+            title: 'Fitness Chat'
+          })
+          .select()
+          .single();
+
+        if (createError) {
+          console.error('Error creating conversation:', createError);
+          return;
+        }
+
+        currentConversationId = newConversation.id;
+
+        // Add welcome message to new conversation
+        await supabase
+          .from('chat_messages')
+          .insert({
+            conversation_id: currentConversationId,
+            content: "Hey, I'm FitMind—your AI fitness coach. What's your current fitness goal?",
+            is_bot: true
+          });
+      }
+
+      setConversationId(currentConversationId);
+
+      // Load messages from this conversation
+      const { data: messageData, error: msgError } = await supabase
+        .from('chat_messages')
+        .select('*')
+        .eq('conversation_id', currentConversationId)
+        .order('created_at', { ascending: true });
+
+      if (msgError) {
+        console.error('Error loading messages:', msgError);
+        return;
+      }
+
+      const formattedMessages: Message[] = messageData.map(msg => ({
+        id: msg.id,
+        text: msg.content,
+        isBot: msg.is_bot,
+        timestamp: new Date(msg.created_at)
+      }));
+
+      setMessages(formattedMessages);
+    } catch (error) {
+      console.error('Error in loadChatHistory:', error);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const saveMessage = async (content: string, isBot: boolean) => {
+    if (!user || !conversationId) return null;
+
+    try {
+      const { data, error } = await supabase
+        .from('chat_messages')
+        .insert({
+          conversation_id: conversationId,
+          content,
+          is_bot: isBot
+        })
+        .select()
+        .single();
+
+      if (error) {
+        console.error('Error saving message:', error);
+        return null;
+      }
+
+      return data.id;
+    } catch (error) {
+      console.error('Error in saveMessage:', error);
+      return null;
+    }
+  };
 
   const callChatGPT = async (userMessage: string) => {
     try {
@@ -68,19 +185,27 @@ const FullPageChat = ({ onClose }: FullPageChatProps) => {
   const handleSendMessage = async () => {
     if (!inputValue.trim()) return;
 
+    const messageText = inputValue;
+    setInputValue("");
+    setIsTyping(true);
+
+    // Save user message to database
+    const userMessageId = await saveMessage(messageText, false);
+    
     const userMessage: Message = {
-      id: messages.length + 1,
-      text: inputValue,
+      id: userMessageId || `temp-user-${Date.now()}`,
+      text: messageText,
       isBot: false,
       timestamp: new Date()
     };
 
     setMessages(prev => [...prev, userMessage]);
-    setInputValue("");
-    setIsTyping(true);
 
     // Call ChatGPT API
-    const botResponseText = await callChatGPT(inputValue);
+    const botResponseText = await callChatGPT(messageText);
+    
+    // Save bot message to database
+    const botMessageId = await saveMessage(botResponseText, true);
     
     // Check if the bot response contains product recommendation
     const hasProductRecommendation = botResponseText.includes('{{X_BRAND}}') || 
@@ -93,7 +218,7 @@ const FullPageChat = ({ onClose }: FullPageChatProps) => {
     }
     
     const botResponse: Message = {
-      id: messages.length + 2,
+      id: botMessageId || `temp-bot-${Date.now()}`,
       text: botResponseText,
       isBot: true,
       timestamp: new Date()
@@ -109,6 +234,17 @@ const FullPageChat = ({ onClose }: FullPageChatProps) => {
     "I'm always tired after workouts",
     "Create a meal plan"
   ];
+
+  if (isLoading) {
+    return (
+      <div className="min-h-screen bg-background flex items-center justify-center">
+        <div className="text-center">
+          <div className="w-8 h-8 border-2 border-primary border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
+          <p className="text-muted-foreground">Loading chat history...</p>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-background flex flex-col">
@@ -132,7 +268,7 @@ const FullPageChat = ({ onClose }: FullPageChatProps) => {
               <h1 className="font-semibold text-lg">FitMind AI</h1>
               <div className="text-sm text-muted-foreground flex items-center gap-1">
                 <div className="w-2 h-2 bg-primary rounded-full animate-pulse"></div>
-                Connected
+                {user ? 'Chat History Enabled' : 'Guest Mode'}
               </div>
             </div>
           </div>
