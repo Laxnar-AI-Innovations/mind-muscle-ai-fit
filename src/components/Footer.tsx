@@ -59,25 +59,25 @@ const Footer = () => {
             <h3 className="text-lg font-semibold text-foreground">Legal</h3>
             <ul className="space-y-3">
               <li>
-                <a href="#privacy" className="text-muted-foreground hover:text-primary transition-colors flex items-center gap-2">
+                <a href="/privacy" className="text-muted-foreground hover:text-primary transition-colors flex items-center gap-2">
                   <Shield className="w-4 h-4" />
                   Privacy Policy
                 </a>
               </li>
               <li>
-                <a href="#terms" className="text-muted-foreground hover:text-primary transition-colors flex items-center gap-2">
+                <a href="/terms" className="text-muted-foreground hover:text-primary transition-colors flex items-center gap-2">
                   <FileText className="w-4 h-4" />
                   Terms of Service
                 </a>
               </li>
               <li>
-                <a href="#about" className="text-muted-foreground hover:text-primary transition-colors flex items-center gap-2">
+                <a href="/about" className="text-muted-foreground hover:text-primary transition-colors flex items-center gap-2">
                   <Info className="w-4 h-4" />
                   About Us
                 </a>
               </li>
               <li>
-                <a href="#cookie" className="text-muted-foreground hover:text-primary transition-colors">
+                <a href="/cookies" className="text-muted-foreground hover:text-primary transition-colors">
                   Cookie Policy
                 </a>
               </li>
