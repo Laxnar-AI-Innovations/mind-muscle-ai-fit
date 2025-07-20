@@ -16,6 +16,102 @@
     <meta name="twitter:card" content="summary_large_image" />
     <meta name="twitter:site" content="@lovable_dev" />
     <meta name="twitter:image" content="https://lovable.dev/opengraph-image-p98pqg.png" />
+
+    <!-- FITMIND META PIXEL + TRACKING -->
+    <script>
+    /* ===== 1. Base Pixel ===== */
+    !function(f,b,e,v,n,t,s){if(f.fbq)return;n=f.fbq=function(){n.callMethod?
+     n.callMethod.apply(n,arguments):n.queue.push(arguments)};if(!f._fbq)f._fbq=n;
+     n.push=n;n.loaded=!0;n.version='2.0';n.queue=[];t=b.createElement(e);t.async=!0;
+     t.src=v;s=b.getElementsByTagName(e)[0];s.parentNode.insertBefore(t,s)}
+     (window, document,'script','https://connect.facebook.net/en_US/fbevents.js');
+    fbq('init','1234280854874158');  // Your Pixel ID
+    fbq('track','PageView');
+
+    /* ===== 2. SPA Route Change Hook (fires PageView on internal nav) ===== */
+    (function(){
+      const _ps = history.pushState;
+      history.pushState = function(){
+        _ps.apply(this, arguments);
+        fbq('track','PageView');
+      };
+      window.addEventListener('popstate', ()=> fbq('track','PageView'));
+    })();
+
+    /* ===== 3. Tracking Module ===== */
+    window.FitTrack = (function(){
+      const S = {};
+
+      function onceFlag(key){
+        if(sessionStorage.getItem(key)) return false;
+        sessionStorage.setItem(key,'1');
+        return true;
+      }
+      function eventId(prefix){
+        return prefix + '_' + Date.now() + '_' + Math.random().toString(36).slice(2);
+      }
+
+      /* --- CORE EVENTS --- */
+      S.registrationComplete = function(method='email'){
+        if (onceFlag('reg_done')){
+          fbq('track','CompleteRegistration',{method});
+        }
+      };
+
+      S.chatStart = function(goal){
+        if (onceFlag('chat_started')){
+          const eid = eventId('chat');
+          sessionStorage.setItem('chat_event_id', eid);
+          fbq('trackCustom','ChatStart',{
+            event_id: eid,
+            goal: goal || null,
+            source: 'web'
+          });
+        }
+      };
+
+      S.goalSelect = function(goal){
+        fbq('trackCustom','ChatGoal',{goal});
+        // If goal picked before first message, treat as start
+        if (!sessionStorage.getItem('chat_started')) S.chatStart(goal);
+      };
+
+      S.messageCount = function(count, goal){
+        if (count === 5 && onceFlag('qualified_chat')){
+          fbq('trackCustom','QualifiedChat',{
+            goal: goal || null,
+            msg_count: count
+          });
+        }
+      };
+
+      // Limit to 3 RecShown per session
+      S.recShown = function(category, rank){
+        let n = +sessionStorage.getItem('recShownCount') || 0;
+        if (n >= 3) return;
+        sessionStorage.setItem('recShownCount', String(n+1));
+        fbq('trackCustom','RecShown',{category, rec_rank: rank});
+      };
+
+      S.recClick = function(category, rank){
+        fbq('trackCustom','RecClick',{category, rec_rank: rank});
+      };
+
+      S.emailOptIn = function(email){
+        if (onceFlag('email_opt')){
+          if (email){  // Optional advanced matching (hashed automatically by pixel)
+            fbq('set','userData',{ em: email });
+          }
+          fbq('trackCustom','EmailOptIn');
+        }
+      };
+
+      return S;
+    })();
+    </script>
+    <noscript><img height="1" width="1" style="display:none"
+    src="https://www.facebook.com/tr?id=1234280854874158&ev=PageView&noscript=1"/></noscript>
+    <!-- /FITMIND META PIXEL + TRACKING -->
   </head>
 
   <body>
