@@ -161,7 +161,7 @@ const FullPageChat = ({ onClose }: FullPageChatProps) => {
     }
   };
 
-  const callChatGPT = async (userMessage: string) => {
+  const callAI = async (userMessage: string) => {
     try {
       // Convert messages to conversation history format for the API
       const conversationHistory = messages.slice(1).map(msg => ({
@@ -207,8 +207,8 @@ const FullPageChat = ({ onClose }: FullPageChatProps) => {
 
     setMessages(prev => [...prev, userMessage]);
 
-    // Call ChatGPT API
-    const botResponseText = await callChatGPT(messageText);
+    // Call AI API
+    const botResponseText = await callAI(messageText);
     
     // Save bot message to database
     const botMessageId = await saveMessage(botResponseText, true);
@@ -400,7 +400,7 @@ const FullPageChat = ({ onClose }: FullPageChatProps) => {
             </Button>
           </div>
           <div className="text-xs text-muted-foreground mt-2 text-center">
-            FitMind.AI powered by ChatGPT 4o-mini
+            FitMind.AI powered by advanced AI
           </div>
         </div>
       </div>
