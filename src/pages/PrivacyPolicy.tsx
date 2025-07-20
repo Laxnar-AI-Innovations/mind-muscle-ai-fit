@@ -135,8 +135,8 @@ const PrivacyPolicy = () => {
                   If you have questions about this Privacy Policy or our data practices, please contact us at:
                 </p>
                 <div className="bg-muted/20 p-4 rounded-lg">
-                  <p>Email: privacy@fitmind.ai</p>
-                  <p>Address: [Your Business Address]</p>
+                  <p>Email: info@laxnar.ai</p>
+                  <p>Address: Civil lines, Jhansi, India</p>
                 </div>
               </div>
             </section>

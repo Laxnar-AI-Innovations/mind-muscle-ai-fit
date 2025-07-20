@@ -178,15 +178,15 @@ const AboutUs = () => {
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div>
                       <h4 className="font-semibold mb-2">General Inquiries</h4>
-                      <p>hello@fitmind.ai</p>
+                      <p>info@laxnar.ai</p>
                     </div>
                     <div>
                       <h4 className="font-semibold mb-2">Support</h4>
-                      <p>support@fitmind.ai</p>
+                      <p>info@laxnar.ai</p>
                     </div>
                     <div>
                       <h4 className="font-semibold mb-2">Business Address</h4>
-                      <p>[Your Business Address]</p>
+                      <p>Civil lines, Jhansi, India</p>
                     </div>
                     <div>
                       <h4 className="font-semibold mb-2">Follow Us</h4>

@@ -174,8 +174,8 @@ const CookiePolicy = () => {
                   If you have any questions about our use of cookies, please contact us:
                 </p>
                 <div className="bg-muted/20 p-4 rounded-lg">
-                  <p>Email: privacy@fitmind.ai</p>
-                  <p>Address: [Your Business Address]</p>
+                  <p>Email: info@laxnar.ai</p>
+                  <p>Address: Civil lines, Jhansi, India</p>
                 </div>
               </div>
             </section>
