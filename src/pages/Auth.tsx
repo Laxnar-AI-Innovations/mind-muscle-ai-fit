@@ -66,7 +66,7 @@ const Auth = () => {
           email,
           password,
           options: {
-            emailRedirectTo: `${window.location.origin}/dashboard`,
+            emailRedirectTo: `${window.location.origin}/dashboard?new=1`,
             data: {
               full_name: name.trim(),
               name: name.trim()
@@ -104,6 +104,8 @@ const Auth = () => {
             title: "Welcome back!",
             description: "You've successfully signed in.",
           });
+          // Redirect to dashboard without new parameter for existing users
+          window.location.href = "/dashboard";
         }
       }
     } catch (error) {
