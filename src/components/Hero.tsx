@@ -50,11 +50,11 @@ const Hero = ({ onOpenChat }: { onOpenChat: () => void }) => {
           
           <Button 
             size="lg" 
-            onClick={handleSignIn}
+            onClick={user ? onOpenChat : handleSignIn}
             className="text-lg px-8 py-6 transition-all duration-300 shadow-lg transform bg-gradient-to-r from-primary to-neon-green hover:from-primary/90 hover:to-neon-green/90 hover:shadow-xl hover:scale-105"
           >
             <Zap className="w-5 h-5 mr-2" />
-            Chat With Your AI Trainer – Free
+            {user ? "Chat With Your AI Trainer" : "Chat With Your AI Trainer – Free"}
           </Button>
         </div>
         
