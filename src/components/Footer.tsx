@@ -6,7 +6,7 @@ const Footer = () => {
   return (
     <footer className="bg-dark-card border-t border-border">
       <div className="max-w-7xl mx-auto px-6 py-16">
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
           {/* Brand */}
           <div className="space-y-4">
             <div className="flex items-center gap-3">
@@ -53,34 +53,6 @@ const Footer = () => {
             </ul>
           </div>
 
-          {/* Support */}
-          <div className="space-y-4">
-            <h3 className="text-lg font-semibold text-foreground">Support</h3>
-            <ul className="space-y-3">
-              <li>
-                <a href="#contact" className="text-muted-foreground hover:text-primary transition-colors flex items-center gap-2">
-                  <Mail className="w-4 h-4" />
-                  Contact Us
-                </a>
-              </li>
-              <li>
-                <a href="#chat" className="text-muted-foreground hover:text-primary transition-colors flex items-center gap-2">
-                  <MessageCircle className="w-4 h-4" />
-                  Live Chat
-                </a>
-              </li>
-              <li>
-                <a href="#help" className="text-muted-foreground hover:text-primary transition-colors">
-                  Help Center
-                </a>
-              </li>
-              <li>
-                <a href="#api" className="text-muted-foreground hover:text-primary transition-colors">
-                  API Documentation
-                </a>
-              </li>
-            </ul>
-          </div>
 
           {/* Legal */}
           <div className="space-y-4">

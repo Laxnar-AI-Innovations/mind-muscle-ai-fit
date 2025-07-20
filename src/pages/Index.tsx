@@ -8,7 +8,6 @@ import { useToast } from "@/hooks/use-toast";
 import Hero from "@/components/Hero";
 import Features from "@/components/Features";
 import Testimonials from "@/components/Testimonials";
-import AffiliateProducts from "@/components/AffiliateProducts";
 import ChatBot from "@/components/ChatBot";
 import Footer from "@/components/Footer";
 
@@ -79,7 +78,6 @@ const Index = () => {
       <Hero onOpenChat={handleOpenChat} />
       <Features />
       <Testimonials />
-      <AffiliateProducts />
       <Footer />
     </div>
   );
