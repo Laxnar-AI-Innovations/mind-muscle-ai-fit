@@ -48,7 +48,16 @@ export const useUserProfile = () => {
     if (profile?.display_name) {
       return profile.display_name;
     }
-    return 'Username';
+    if (user?.user_metadata?.full_name) {
+      return user.user_metadata.full_name;
+    }
+    if (user?.user_metadata?.name) {
+      return user.user_metadata.name;
+    }
+    if (user?.email) {
+      return user.email.split('@')[0];
+    }
+    return 'User';
   };
 
   const getFirstName = () => {
