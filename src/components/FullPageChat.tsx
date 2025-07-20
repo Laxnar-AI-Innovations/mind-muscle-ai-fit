@@ -4,6 +4,7 @@ import { Input } from "@/components/ui/input";
 import { ArrowLeft, Send, Brain, User } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
+import { useUserProfile } from "@/hooks/useUserProfile";
 import ProductRecommendation from "./ProductRecommendation";
 
 interface Message {
@@ -19,6 +20,7 @@ interface FullPageChatProps {
 
 const FullPageChat = ({ onClose }: FullPageChatProps) => {
   const { user } = useAuth();
+  const { firstName } = useUserProfile();
   const [messages, setMessages] = useState<Message[]>([]);
   const [inputValue, setInputValue] = useState("");
   const [isTyping, setIsTyping] = useState(false);
@@ -43,7 +45,7 @@ const FullPageChat = ({ onClose }: FullPageChatProps) => {
       // Show welcome message for non-authenticated users
       setMessages([{
         id: 'welcome',
-        text: "Hey, I'm FitMind—your AI fitness coach. What's your current fitness goal?",
+        text: "Hi, I'm FitMind—your AI wellness guide. I'm here to help with sleep, recovery, energy, and more. What's one thing you've been struggling with lately—fatigue, stress, soreness, or something else?",
         isBot: true,
         timestamp: new Date()
       }]);
@@ -91,11 +93,15 @@ const FullPageChat = ({ onClose }: FullPageChatProps) => {
         currentConversationId = newConversation.id;
 
         // Add welcome message to new conversation
+        const welcomeMessage = firstName 
+          ? `Hi ${firstName}, I'm FitMind—your AI wellness guide. I'm here to help with sleep, recovery, energy, and more. What's one thing you've been struggling with lately—fatigue, stress, soreness, or something else?`
+          : "Hi, I'm FitMind—your AI wellness guide. I'm here to help with sleep, recovery, energy, and more. What's one thing you've been struggling with lately—fatigue, stress, soreness, or something else?";
+        
         await supabase
           .from('chat_messages')
           .insert({
             conversation_id: currentConversationId,
-            content: "Hey, I'm FitMind—your AI fitness coach. What's your current fitness goal?",
+            content: welcomeMessage,
             is_bot: true
           });
       }

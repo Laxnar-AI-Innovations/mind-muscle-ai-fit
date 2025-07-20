@@ -12,6 +12,7 @@ import { Mail, Lock, User, ArrowLeft } from "lucide-react";
 
 const Auth = () => {
   const [isSignUp, setIsSignUp] = useState(false);
+  const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
@@ -31,6 +32,16 @@ const Auth = () => {
     try {
       if (isSignUp) {
         // Validation for signup
+        if (!name.trim()) {
+          toast({
+            title: "Error",
+            description: "Please enter your name",
+            variant: "destructive",
+          });
+          setIsLoading(false);
+          return;
+        }
+
         if (password !== confirmPassword) {
           toast({
             title: "Error",
@@ -55,7 +66,11 @@ const Auth = () => {
           email,
           password,
           options: {
-            emailRedirectTo: `${window.location.origin}/`
+            emailRedirectTo: `${window.location.origin}/`,
+            data: {
+              full_name: name.trim(),
+              name: name.trim()
+            }
           }
         });
 
@@ -153,6 +168,24 @@ const Auth = () => {
           </CardHeader>
           <CardContent>
             <form onSubmit={handleSubmit} className="space-y-4">
+              {isSignUp && (
+                <div className="space-y-2">
+                  <Label htmlFor="name" className="flex items-center gap-2">
+                    <User className="w-4 h-4" />
+                    Full Name
+                  </Label>
+                  <Input
+                    id="name"
+                    type="text"
+                    placeholder="Your full name"
+                    value={name}
+                    onChange={(e) => setName(e.target.value)}
+                    required
+                    className="bg-background/50"
+                  />
+                </div>
+              )}
+
               <div className="space-y-2">
                 <Label htmlFor="email" className="flex items-center gap-2">
                   <Mail className="w-4 h-4" />

@@ -3,6 +3,7 @@ import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { LogOut, User } from "lucide-react";
 import { useAuth } from "@/hooks/useAuth";
+import { useUserProfile } from "@/hooks/useUserProfile";
 import { useToast } from "@/hooks/use-toast";
 import Hero from "@/components/Hero";
 import Features from "@/components/Features";
@@ -14,6 +15,7 @@ import Footer from "@/components/Footer";
 const Index = () => {
   const [showChat, setShowChat] = useState(false);
   const { user, loading, signOut } = useAuth();
+  const { displayName, firstName } = useUserProfile();
   const { toast } = useToast();
 
   const handleOpenChat = () => {
@@ -60,7 +62,7 @@ const Index = () => {
         {user && (
           <div className="flex items-center gap-2 bg-background/80 backdrop-blur-sm rounded-lg px-3 py-2 border">
             <User className="h-4 w-4" />
-            <span className="text-sm">{user.email}</span>
+            <span className="text-sm">Welcome, {firstName}!</span>
             <Button 
               onClick={handleSignOut} 
               variant="ghost" 
