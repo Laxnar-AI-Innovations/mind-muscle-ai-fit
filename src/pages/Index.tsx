@@ -1,8 +1,8 @@
+
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { LogOut, User } from "lucide-react";
 import { useAuth } from "@/hooks/useAuth";
-import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 import Hero from "@/components/Hero";
 import Features from "@/components/Features";
@@ -20,7 +20,7 @@ const Index = () => {
     if (!user) {
       toast({
         title: "Authentication Required",
-        description: "Please sign in with Google to start chatting",
+        description: "Please sign in to start chatting",
         variant: "destructive",
       });
       return;
@@ -30,36 +30,13 @@ const Index = () => {
 
   const handleCloseChat = () => setShowChat(false);
 
-  const handleGoogleSignIn = async () => {
-    try {
-      const redirectUrl = `${window.location.origin}/`;
-      
-      const { error } = await supabase.auth.signInWithOAuth({
-        provider: 'google',
-        options: {
-          redirectTo: redirectUrl
-        }
-      });
-
-      if (error) {
-        toast({
-          title: "Error",
-          description: error.message,
-          variant: "destructive",
-        });
-      }
-    } catch (error) {
-      toast({
-        title: "Error",
-        description: "An unexpected error occurred",
-        variant: "destructive",
-      });
-    }
-  };
-
   const handleSignOut = async () => {
     await signOut();
     setShowChat(false);
+    toast({
+      title: "Signed out",
+      description: "You've been successfully signed out.",
+    });
   };
 
   if (loading) {
