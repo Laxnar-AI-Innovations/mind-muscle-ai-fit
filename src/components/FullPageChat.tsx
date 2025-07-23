@@ -272,7 +272,9 @@ const FullPageChat = ({ onClose }: FullPageChatProps) => {
 
     // Call AI API and process response
     const rawBotResponse = await callAI(messageText);
+    console.log('About to process AI response:', rawBotResponse);
     const { cleanedText, shouldShowComponents } = processAIResponse(rawBotResponse);
+    console.log('Processed result:', { cleanedText, shouldShowComponents });
     
     // Save the original bot message to database (with trigger phrase)
     const botMessageId = await saveMessage(rawBotResponse, true);
