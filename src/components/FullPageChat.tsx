@@ -173,18 +173,35 @@ const FullPageChat = ({ onClose }: FullPageChatProps) => {
 
   // Post-processing function for AI responses
   const processAIResponse = (rawResponse: string) => {
-    const triggerPhrase = '🔁 show_components';
+    const triggerVariations = [
+      '🔁 show_components',
+      '"🔁 show_components"',
+      "'🔁 show_components'",
+      '🔁show_components',
+      '🔁 show_components.',
+      '🔁 show_components!',
+    ];
+    
     console.log('Raw AI Response:', rawResponse);
-    console.log('Looking for trigger phrase:', triggerPhrase);
+    console.log('Looking for trigger variations:', triggerVariations);
     
-    const hasProductRecommendation = rawResponse.includes(triggerPhrase);
+    let hasProductRecommendation = false;
+    let cleanedResponse = rawResponse;
+    
+    // Check for any trigger variation and remove it
+    for (const trigger of triggerVariations) {
+      if (rawResponse.includes(trigger)) {
+        hasProductRecommendation = true;
+        // Create a regex that handles the trigger at the end of lines or with whitespace
+        const escapedTrigger = trigger.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+        const regex = new RegExp(`\\s*${escapedTrigger}\\s*`, 'gi');
+        cleanedResponse = cleanedResponse.replace(regex, '').trim();
+        console.log(`Found and removed trigger: "${trigger}"`);
+        break;
+      }
+    }
+    
     console.log('Contains trigger phrase:', hasProductRecommendation);
-    
-    // Strip the trigger phrase from the response
-    const cleanedResponse = hasProductRecommendation 
-      ? rawResponse.replace(new RegExp(triggerPhrase.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'), 'g'), '').trim()
-      : rawResponse;
-    
     console.log('Cleaned response:', cleanedResponse);
     
     return {
