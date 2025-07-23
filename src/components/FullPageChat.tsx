@@ -237,17 +237,8 @@ const FullPageChat = ({ onClose }: FullPageChatProps) => {
     // Save bot message to database
     const botMessageId = await saveMessage(botResponseText, true);
     
-    // Check if the bot response contains trigger words for product recommendations
-    const triggerWords = [
-      'recommend', 'suggestion', 'try', 'consider', 'might help', 'could help',
-      'supplement', 'cbd', 'cbg', 'cbn', 'magnesium', 'vitamin', 'turmeric',
-      'sleep support', 'energy boost', 'recovery', 'inflammation', 'pain relief',
-      'wellness tools', 'natural solution', 'organic', 'extract', 'capsule',
-      'softgel', 'gummy', 'oil', 'topical', 'balm', 'collagen'
-    ];
-    
-    const responseText = botResponseText.toLowerCase();
-    const hasProductRecommendation = triggerWords.some(word => responseText.includes(word));
+    // Check if the bot response contains the specific trigger phrase for product recommendations
+    const hasProductRecommendation = botResponseText.includes('🔁 show_components');
     
     // Set product recommendation state if detected
     if (hasProductRecommendation) {
