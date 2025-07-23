@@ -1,3 +1,10 @@
+// FullPageChat.tsx  (updated)
+// - Strips the trigger token "🔁 show_components" from bot text
+// - Triggers ProductRecommendation ONLY when that token is present (and only once)
+// - Removes old keyword/X_BRAND heuristic
+// - Fires Pixel recShown once (already in useEffect)
+// ----------------------------------------------------
+
 import { useState, useRef, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -18,9 +25,12 @@ interface FullPageChatProps {
   onClose: () => void;
 }
 
+const TRIGGER_TOKEN = "🔁 show_components";
+
 const FullPageChat = ({ onClose }: FullPageChatProps) => {
   const { user, signOut } = useAuth();
   const { firstName } = useUserProfile();
+
   const [messages, setMessages] = useState<Message[]>([]);
   const [inputValue, setInputValue] = useState("");
   const [isTyping, setIsTyping] = useState(false);
@@ -29,7 +39,9 @@ const FullPageChat = ({ onClose }: FullPageChatProps) => {
   const [isLoading, setIsLoading] = useState(true);
   const [userMsgCount, setUserMsgCount] = useState(0);
   const [currentGoal, setCurrentGoal] = useState<string | null>(null);
+
   const messagesEndRef = useRef<HTMLDivElement>(null);
+  const recTriggeredRef = useRef(false); // ensure one trigger per session
 
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
@@ -37,13 +49,13 @@ const FullPageChat = ({ onClose }: FullPageChatProps) => {
 
   useEffect(() => {
     scrollToBottom();
-  }, [messages]);
+  }, [messages, showProductRecommendation]);
 
-  // Track recommendation shown once per session
+  // Fire recShown once when component becomes visible
   useEffect(() => {
-    if (showProductRecommendation && (window as any).FitTrack && !sessionStorage.getItem('rec_shown_once')) {
-      (window as any).FitTrack.recShown('supplement', 1);
-      sessionStorage.setItem('rec_shown_once', '1');
+    if (showProductRecommendation && (window as any).FitTrack && !sessionStorage.getItem("rec_shown_once")) {
+      (window as any).FitTrack.recShown("supplement", 1);
+      sessionStorage.setItem("rec_shown_once", "1");
     }
   }, [showProductRecommendation]);
 
@@ -52,31 +64,32 @@ const FullPageChat = ({ onClose }: FullPageChatProps) => {
     if (user) {
       loadChatHistory();
     } else {
-      // Show welcome message for non-authenticated users
-      setMessages([{
-        id: 'welcome',
-        text: "Hi, I'm FitMind—your AI wellness guide. I'm here to help with sleep, recovery, energy, and more. What's one thing you've been struggling with lately—fatigue, stress, soreness, or something else?",
-        isBot: true,
-        timestamp: new Date()
-      }]);
+      // Guest welcome
+      setMessages([
+        {
+          id: "welcome",
+          text: "Hi, I'm FitMind—your AI wellness guide. I'm here to help with sleep, recovery, energy, and more. What's one thing you've been struggling with lately—fatigue, stress, soreness, or something else?",
+          isBot: true,
+          timestamp: new Date(),
+        },
+      ]);
       setIsLoading(false);
     }
   }, [user]);
 
   const loadChatHistory = async () => {
     if (!user) return;
-
     try {
-      // Get or create a conversation for this user
+      // Get or create conversation
       let { data: conversations, error: convError } = await supabase
-        .from('chat_conversations')
-        .select('id')
-        .eq('user_id', user.id)
-        .order('updated_at', { ascending: false })
+        .from("chat_conversations")
+        .select("id")
+        .eq("user_id", user.id)
+        .order("updated_at", { ascending: false })
         .limit(1);
 
       if (convError) {
-        console.error('Error loading conversations:', convError);
+        console.error("Error loading conversations:", convError);
         return;
       }
 
@@ -85,61 +98,56 @@ const FullPageChat = ({ onClose }: FullPageChatProps) => {
       if (conversations && conversations.length > 0) {
         currentConversationId = conversations[0].id;
       } else {
-        // Create new conversation
         const { data: newConversation, error: createError } = await supabase
-          .from('chat_conversations')
+          .from("chat_conversations")
           .insert({
             user_id: user.id,
-            title: 'Fitness Chat'
+            title: "Fitness Chat",
           })
           .select()
           .single();
 
         if (createError) {
-          console.error('Error creating conversation:', createError);
+          console.error("Error creating conversation:", createError);
           return;
         }
 
         currentConversationId = newConversation.id;
 
-        // Add welcome message to new conversation
-        const welcomeMessage = firstName 
+        const welcomeMessage = firstName
           ? `Hi ${firstName}, I'm FitMind—your AI wellness guide. I'm here to help with sleep, recovery, energy, and more. What's one thing you've been struggling with lately—fatigue, stress, soreness, or something else?`
           : "Hi, I'm FitMind—your AI wellness guide. I'm here to help with sleep, recovery, energy, and more. What's one thing you've been struggling with lately—fatigue, stress, soreness, or something else?";
-        
-        await supabase
-          .from('chat_messages')
-          .insert({
-            conversation_id: currentConversationId,
-            content: welcomeMessage,
-            is_bot: true
-          });
+
+        await supabase.from("chat_messages").insert({
+          conversation_id: currentConversationId,
+          content: welcomeMessage,
+          is_bot: true,
+        });
       }
 
       setConversationId(currentConversationId);
 
-      // Load messages from this conversation
       const { data: messageData, error: msgError } = await supabase
-        .from('chat_messages')
-        .select('*')
-        .eq('conversation_id', currentConversationId)
-        .order('created_at', { ascending: true });
+        .from("chat_messages")
+        .select("*")
+        .eq("conversation_id", currentConversationId)
+        .order("created_at", { ascending: true });
 
       if (msgError) {
-        console.error('Error loading messages:', msgError);
+        console.error("Error loading messages:", msgError);
         return;
       }
 
-      const formattedMessages: Message[] = messageData.map(msg => ({
+      const formattedMessages: Message[] = messageData.map((msg) => ({
         id: msg.id,
         text: msg.content,
         isBot: msg.is_bot,
-        timestamp: new Date(msg.created_at)
+        timestamp: new Date(msg.created_at),
       }));
 
       setMessages(formattedMessages);
     } catch (error) {
-      console.error('Error in loadChatHistory:', error);
+      console.error("Error in loadChatHistory:", error);
     } finally {
       setIsLoading(false);
     }
@@ -147,86 +155,44 @@ const FullPageChat = ({ onClose }: FullPageChatProps) => {
 
   const saveMessage = async (content: string, isBot: boolean) => {
     if (!user || !conversationId) return null;
-
     try {
       const { data, error } = await supabase
-        .from('chat_messages')
+        .from("chat_messages")
         .insert({
           conversation_id: conversationId,
           content,
-          is_bot: isBot
+          is_bot: isBot,
         })
         .select()
         .single();
 
       if (error) {
-        console.error('Error saving message:', error);
+        console.error("Error saving message:", error);
         return null;
       }
-
       return data.id;
     } catch (error) {
-      console.error('Error in saveMessage:', error);
+      console.error("Error in saveMessage:", error);
       return null;
     }
   };
 
-  // Post-processing function for AI responses
-  const processAIResponse = (rawResponse: string) => {
-    const triggerVariations = [
-      '🔁 show_components',
-      '"🔁 show_components"',
-      "'🔁 show_components'",
-      '🔁show_components',
-      '🔁 show_components.',
-      '🔁 show_components!',
-    ];
-    
-    console.log('Raw AI Response:', rawResponse);
-    console.log('Looking for trigger variations:', triggerVariations);
-    
-    let hasProductRecommendation = false;
-    let cleanedResponse = rawResponse;
-    
-    // Check for any trigger variation and remove it
-    for (const trigger of triggerVariations) {
-      if (rawResponse.includes(trigger)) {
-        hasProductRecommendation = true;
-        // Create a regex that handles the trigger at the end of lines or with whitespace
-        const escapedTrigger = trigger.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
-        const regex = new RegExp(`\\s*${escapedTrigger}\\s*`, 'gi');
-        cleanedResponse = cleanedResponse.replace(regex, '').trim();
-        console.log(`Found and removed trigger: "${trigger}"`);
-        break;
-      }
-    }
-    
-    console.log('Contains trigger phrase:', hasProductRecommendation);
-    console.log('Cleaned response:', cleanedResponse);
-    
-    return {
-      cleanedText: cleanedResponse,
-      shouldShowComponents: hasProductRecommendation
-    };
-  };
-
   const callAI = async (userMessage: string) => {
     try {
-      // Convert messages to conversation history format for the API
-      const conversationHistory = messages.slice(1).map(msg => ({
-        role: msg.isBot ? 'assistant' : 'user',
-        content: msg.text
+      const conversationHistory = messages.slice(1).map((msg) => ({
+        role: msg.isBot ? "assistant" : "user",
+        content: msg.text,
       }));
 
-      const { data, error } = await supabase.functions.invoke('chat-with-ai', {
-        body: { 
+      const { data, error } = await supabase.functions.invoke("chat-with-ai", {
+        body: {
           message: userMessage,
-          conversationHistory: conversationHistory
-        }
+          conversationHistory,
+        },
       });
 
       if (error) {
-        console.error('Supabase function error:', error);
+        console.error("Supabase function error:", error);
         return "I'm having trouble connecting right now. Please try again in a moment.";
       }
 
@@ -244,64 +210,66 @@ const FullPageChat = ({ onClose }: FullPageChatProps) => {
     setInputValue("");
     setIsTyping(true);
 
-    // Update user message count
+    // Track user message count
     const newCount = userMsgCount + 1;
     setUserMsgCount(newCount);
 
-    // Facebook Pixel tracking for first message
+    // Pixel events
     if (newCount === 1 && (window as any).FitTrack) {
       (window as any).FitTrack.chatStart(currentGoal);
     }
-
-    // Facebook Pixel tracking for qualified chat (5+ messages)
     if ((window as any).FitTrack) {
       (window as any).FitTrack.qualifiedChat(newCount, currentGoal);
     }
 
-    // Save user message to database
+    // Save user message
     const userMessageId = await saveMessage(messageText, false);
-    
     const userMessage: Message = {
       id: userMessageId || `temp-user-${Date.now()}`,
       text: messageText,
       isBot: false,
-      timestamp: new Date()
+      timestamp: new Date(),
     };
+    setMessages((prev) => [...prev, userMessage]);
 
-    setMessages(prev => [...prev, userMessage]);
+    // Call AI
+    const botResponseText = await callAI(messageText);
 
-    // Call AI API and process response
-    const rawBotResponse = await callAI(messageText);
-    console.log('About to process AI response:', rawBotResponse);
-    const { cleanedText, shouldShowComponents } = processAIResponse(rawBotResponse);
-    console.log('Processed result:', { cleanedText, shouldShowComponents });
-    
-    // Save the original bot message to database (with trigger phrase)
-    const botMessageId = await saveMessage(rawBotResponse, true);
-    
-    // Set product recommendation state if detected
-    if (shouldShowComponents) {
-      setShowProductRecommendation(true);
+    // === Trigger token check ===
+    let cleanedBotText = botResponseText.trim();
+    let shouldTriggerProduct = false;
+
+    if (cleanedBotText.endsWith(TRIGGER_TOKEN)) {
+      shouldTriggerProduct = true;
+      cleanedBotText = cleanedBotText.replace(TRIGGER_TOKEN, "").trim();
     }
-    
+
+    // Save bot message
+    const botMessageId = await saveMessage(cleanedBotText, true);
     const botResponse: Message = {
       id: botMessageId || `temp-bot-${Date.now()}`,
-      text: cleanedText,
+      text: cleanedBotText,
       isBot: true,
-      timestamp: new Date()
+      timestamp: new Date(),
     };
-    
-    setMessages(prev => [...prev, botResponse]);
+
+    setMessages((prev) => [...prev, botResponse]);
     setIsTyping(false);
+
+    // Show recommendation component if token present (only once)
+    if (shouldTriggerProduct && !recTriggeredRef.current) {
+      recTriggeredRef.current = true;
+      setShowProductRecommendation(true);
+    }
   };
 
   const quickReplies = [
     "I'm feeling stressed and anxious",
-    "I have trouble sleeping", 
+    "I have trouble sleeping",
     "I experience chronic fatigue",
     "How can I reduce inflammation?",
     "Help with pain management",
-    "Improve my emotional balance"
+    "Improve my emotional balance",
   ];
 
   if (isLoading) {
@@ -328,7 +296,7 @@ const FullPageChat = ({ onClose }: FullPageChatProps) => {
             <ArrowLeft className="w-4 h-4" />
             Back to Home
           </Button>
-          
+
           <div className="flex items-center gap-3">
             <div className="w-10 h-10 bg-gradient-to-r from-primary to-neon-green rounded-full flex items-center justify-center">
               <Brain className="w-5 h-5 text-white" />
@@ -337,7 +305,7 @@ const FullPageChat = ({ onClose }: FullPageChatProps) => {
               <h1 className="font-semibold text-lg">FitMind AI</h1>
               <div className="text-sm text-muted-foreground flex items-center gap-1">
                 <div className="w-2 h-2 bg-primary rounded-full animate-pulse"></div>
-                {user ? 'Chat History Enabled' : 'Guest Mode'}
+                {user ? "Chat History Enabled" : "Guest Mode"}
               </div>
             </div>
           </div>
@@ -363,33 +331,31 @@ const FullPageChat = ({ onClose }: FullPageChatProps) => {
         <div className="max-w-4xl mx-auto px-4 py-6">
           <div className="space-y-6">
             {messages.map((message) => (
-              <div key={message.id} className={`flex gap-4 ${message.isBot ? '' : 'flex-row-reverse'}`}>
-                <div className={`w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0 ${
-                  message.isBot 
-                    ? 'bg-gradient-to-r from-primary to-neon-green' 
-                    : 'bg-muted'
-                }`}>
-                  {message.isBot ? (
-                    <Brain className="w-4 h-4 text-white" />
-                  ) : (
-                    <User className="w-4 h-4" />
-                  )}
+              <div key={message.id} className={`flex gap-4 ${message.isBot ? "" : "flex-row-reverse"}`}>
+                <div
+                  className={`w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0 ${
+                    message.isBot ? "bg-gradient-to-r from-primary to-neon-green" : "bg-muted"
+                  }`}
+                >
+                  {message.isBot ? <Brain className="w-4 h-4 text-white" /> : <User className="w-4 h-4" />}
                 </div>
-                <div className={`flex-1 max-w-2xl ${message.isBot ? '' : 'text-right'}`}>
-                  <div className={`inline-block p-4 rounded-lg ${
-                    message.isBot
-                      ? 'bg-muted text-foreground'
-                      : 'bg-gradient-to-r from-primary to-neon-green text-white'
-                  }`}>
+                <div className={`flex-1 max-w-2xl ${message.isBot ? "" : "text-right"}`}>
+                  <div
+                    className={`inline-block p-4 rounded-lg ${
+                      message.isBot
+                        ? "bg-muted text-foreground"
+                        : "bg-gradient-to-r from-primary to-neon-green text-white"
+                    }`}
+                  >
                     <div className="whitespace-pre-line">{message.text}</div>
                   </div>
                   <div className="text-xs text-muted-foreground mt-1">
-                    {message.timestamp.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                    {message.timestamp.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}
                   </div>
                 </div>
               </div>
             ))}
-            
+
             {isTyping && (
               <div className="flex gap-4">
                 <div className="w-8 h-8 rounded-full bg-gradient-to-r from-primary to-neon-green flex items-center justify-center flex-shrink-0">
@@ -406,7 +372,7 @@ const FullPageChat = ({ onClose }: FullPageChatProps) => {
                 </div>
               </div>
             )}
-            
+
             <div ref={messagesEndRef} />
           </div>
 
@@ -421,7 +387,7 @@ const FullPageChat = ({ onClose }: FullPageChatProps) => {
                     variant="outline"
                     onClick={() => {
                       setInputValue(reply);
-                      // Track goal selection for certain replies
+                      // Track goal selection
                       if ((window as any).FitTrack) {
                         const goalMap: Record<string, string> = {
                           "I'm feeling stressed and anxious": "stress",
@@ -429,7 +395,7 @@ const FullPageChat = ({ onClose }: FullPageChatProps) => {
                           "I experience chronic fatigue": "energy",
                           "How can I reduce inflammation?": "inflammation",
                           "Help with pain management": "pain",
-                          "Improve my emotional balance": "emotional_balance"
+                          "Improve my emotional balance": "emotional_balance",
                         };
                         const goal = goalMap[reply];
                         if (goal) {
@@ -449,11 +415,11 @@ const FullPageChat = ({ onClose }: FullPageChatProps) => {
         </div>
       </div>
 
-      {/* Product Recommendation - appears outside conversation */}
+      {/* Product Recommendation */}
       {showProductRecommendation && (
         <div className="border-t border-border bg-card/30 backdrop-blur-sm">
           <div className="max-w-4xl mx-auto px-4 py-6">
-            <ProductRecommendation onLinkClick={() => console.log('Product link clicked')} />
+            <ProductRecommendation onLinkClick={() => console.log("Product link clicked")} />
           </div>
         </div>
       )}
@@ -466,7 +432,7 @@ const FullPageChat = ({ onClose }: FullPageChatProps) => {
               value={inputValue}
               onChange={(e) => setInputValue(e.target.value)}
               placeholder="Ask your AI trainer anything..."
-              onKeyPress={(e) => e.key === 'Enter' && !e.shiftKey && handleSendMessage()}
+              onKeyPress={(e) => e.key === "Enter" && !e.shiftKey && handleSendMessage()}
               className="flex-1 bg-background border-border"
               disabled={isTyping}
             />
