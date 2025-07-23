@@ -234,9 +234,6 @@ const FullPageChat = ({ onClose }: FullPageChatProps) => {
     // Call AI API
     const botResponseText = await callAI(messageText);
     
-    console.log('AI Response:', botResponseText);
-    console.log('Contains trigger?:', botResponseText.includes('🔁 show_components'));
-    
     // Check if the bot response contains the specific trigger phrase for product recommendations
     const hasProductRecommendation = botResponseText.includes('🔁 show_components');
     
@@ -244,9 +241,6 @@ const FullPageChat = ({ onClose }: FullPageChatProps) => {
     const displayText = hasProductRecommendation 
       ? botResponseText.replace(/🔁 show_components/g, '').trim()
       : botResponseText;
-    
-    console.log('Display text after stripping:', displayText);
-    console.log('Will show product recommendation:', hasProductRecommendation);
     
     // Save the original bot message to database (with trigger phrase)
     const botMessageId = await saveMessage(botResponseText, true);
