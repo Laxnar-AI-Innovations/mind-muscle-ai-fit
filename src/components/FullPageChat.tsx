@@ -234,11 +234,16 @@ const FullPageChat = ({ onClose }: FullPageChatProps) => {
     // Call AI API
     const botResponseText = await callAI(messageText);
     
-    // Save bot message to database
-    const botMessageId = await saveMessage(botResponseText, true);
-    
     // Check if the bot response contains the specific trigger phrase for product recommendations
     const hasProductRecommendation = botResponseText.includes('🔁 show_components');
+    
+    // Strip the trigger phrase from the displayed message
+    const displayText = hasProductRecommendation 
+      ? botResponseText.replace('🔁 show_components', '').trim()
+      : botResponseText;
+    
+    // Save the original bot message to database (with trigger phrase)
+    const botMessageId = await saveMessage(botResponseText, true);
     
     // Set product recommendation state if detected
     if (hasProductRecommendation) {
@@ -247,7 +252,7 @@ const FullPageChat = ({ onClose }: FullPageChatProps) => {
     
     const botResponse: Message = {
       id: botMessageId || `temp-bot-${Date.now()}`,
-      text: botResponseText,
+      text: displayText,
       isBot: true,
       timestamp: new Date()
     };
