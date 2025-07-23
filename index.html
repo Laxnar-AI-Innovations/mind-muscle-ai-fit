@@ -108,6 +108,21 @@
 
       return S;
     })();
+
+    /* ===== 4. Auto-detect ?new=1 for CompleteRegistration ===== */
+    (function(){
+      const url = new URL(window.location.href);
+      if (url.searchParams.get('new') === '1' && typeof fbq === 'function') {
+        // Guard so refresh won't double-fire
+        if (!sessionStorage.getItem('fm_reg_done')) {
+          fbq('track','CompleteRegistration',{method:'email'});
+          sessionStorage.setItem('fm_reg_done','1');
+        }
+        // Clean the URL
+        url.searchParams.delete('new');
+        window.history.replaceState({}, '', url.pathname + url.search);
+      }
+    })();
     </script>
     <!-- /FITMIND META PIXEL + TRACKING -->
   </head>
