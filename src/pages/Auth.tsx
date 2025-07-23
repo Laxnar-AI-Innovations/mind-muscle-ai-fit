@@ -22,6 +22,11 @@ const Auth = () => {
 
   // Redirect if already authenticated
   if (user && !loading) {
+    const isNewUser = localStorage.getItem('isNewUser');
+    if (isNewUser) {
+      localStorage.removeItem('isNewUser');
+      return <Navigate to="/dashboard?new=1" replace />;
+    }
     return <Navigate to="/dashboard" replace />;
   }
 
@@ -81,6 +86,8 @@ const Auth = () => {
             variant: "destructive",
           });
         } else {
+          // Store flag for new user to redirect with ?new=1 after auth
+          localStorage.setItem('isNewUser', 'true');
           toast({
             title: "Check your email",
             description: "We've sent you a confirmation link to complete your registration.",
