@@ -171,6 +171,22 @@ const FullPageChat = ({ onClose }: FullPageChatProps) => {
     }
   };
 
+  // Post-processing function for AI responses
+  const processAIResponse = (rawResponse: string) => {
+    const triggerPhrase = '🔁 show_components';
+    const hasProductRecommendation = rawResponse.includes(triggerPhrase);
+    
+    // Strip the trigger phrase from the response
+    const cleanedResponse = hasProductRecommendation 
+      ? rawResponse.replace(new RegExp(triggerPhrase, 'g'), '').trim()
+      : rawResponse;
+    
+    return {
+      cleanedText: cleanedResponse,
+      shouldShowComponents: hasProductRecommendation
+    };
+  };
+
   const callAI = async (userMessage: string) => {
     try {
       // Convert messages to conversation history format for the API
@@ -231,28 +247,21 @@ const FullPageChat = ({ onClose }: FullPageChatProps) => {
 
     setMessages(prev => [...prev, userMessage]);
 
-    // Call AI API
-    const botResponseText = await callAI(messageText);
-    
-    // Check if the bot response contains the specific trigger phrase for product recommendations
-    const hasProductRecommendation = botResponseText.includes('🔁 show_components');
-    
-    // Strip the trigger phrase from the displayed message
-    const displayText = hasProductRecommendation 
-      ? botResponseText.replace(/🔁 show_components/g, '').trim()
-      : botResponseText;
+    // Call AI API and process response
+    const rawBotResponse = await callAI(messageText);
+    const { cleanedText, shouldShowComponents } = processAIResponse(rawBotResponse);
     
     // Save the original bot message to database (with trigger phrase)
-    const botMessageId = await saveMessage(botResponseText, true);
+    const botMessageId = await saveMessage(rawBotResponse, true);
     
     // Set product recommendation state if detected
-    if (hasProductRecommendation) {
+    if (shouldShowComponents) {
       setShowProductRecommendation(true);
     }
     
     const botResponse: Message = {
       id: botMessageId || `temp-bot-${Date.now()}`,
-      text: displayText,
+      text: cleanedText,
       isBot: true,
       timestamp: new Date()
     };
