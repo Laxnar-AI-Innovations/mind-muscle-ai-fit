@@ -27,6 +27,8 @@ const FullPageChat = ({ onClose }: FullPageChatProps) => {
   const [showProductRecommendation, setShowProductRecommendation] = useState(false);
   const [conversationId, setConversationId] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(true);
+  const [userMsgCount, setUserMsgCount] = useState(0);
+  const [currentGoal, setCurrentGoal] = useState<string | null>(null);
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
   const scrollToBottom = () => {
@@ -195,6 +197,20 @@ const FullPageChat = ({ onClose }: FullPageChatProps) => {
     setInputValue("");
     setIsTyping(true);
 
+    // Update user message count
+    const newCount = userMsgCount + 1;
+    setUserMsgCount(newCount);
+
+    // Facebook Pixel tracking for first message
+    if (newCount === 1 && (window as any).FitTrack) {
+      (window as any).FitTrack.chatStart(currentGoal);
+    }
+
+    // Facebook Pixel tracking for qualified chat (5+ messages)
+    if ((window as any).FitTrack) {
+      (window as any).FitTrack.qualifiedChat(newCount, currentGoal);
+    }
+
     // Save user message to database
     const userMessageId = await saveMessage(messageText, false);
     
@@ -219,8 +235,10 @@ const FullPageChat = ({ onClose }: FullPageChatProps) => {
        (botResponseText.toLowerCase().includes('protein') || botResponseText.toLowerCase().includes('supplement')));
     
     // Set product recommendation state if detected
-    if (hasProductRecommendation) {
+    if (hasProductRecommendation && (window as any).FitTrack) {
       setShowProductRecommendation(true);
+      // Track recommendation shown - using generic category for now
+      (window as any).FitTrack.recShown('supplement', 1);
     }
     
     const botResponse: Message = {

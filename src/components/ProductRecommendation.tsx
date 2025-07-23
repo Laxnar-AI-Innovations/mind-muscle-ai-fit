@@ -18,11 +18,21 @@ const ProductRecommendation = ({
   productImage = "/lovable-uploads/e72d77ae-3d4e-43a1-9eb5-ae0f3bf48de0.png"
 }: ProductRecommendationProps) => {
   const handleProductClick = () => {
+    // Facebook Pixel tracking for product click
+    if ((window as any).FitTrack) {
+      (window as any).FitTrack.recClick('supplement', 1);
+    }
+    
     window.open(affiliateLink, '_blank');
     onLinkClick?.();
   };
 
   const handleLearnMoreClick = () => {
+    // Facebook Pixel tracking for product click
+    if ((window as any).FitTrack) {
+      (window as any).FitTrack.recClick('supplement', 1);
+    }
+    
     window.open(affiliateLink, '_blank');
     onLinkClick?.();
   };
