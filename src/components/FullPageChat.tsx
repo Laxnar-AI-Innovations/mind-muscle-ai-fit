@@ -174,12 +174,18 @@ const FullPageChat = ({ onClose }: FullPageChatProps) => {
   // Post-processing function for AI responses
   const processAIResponse = (rawResponse: string) => {
     const triggerPhrase = '🔁 show_components';
+    console.log('Raw AI Response:', rawResponse);
+    console.log('Looking for trigger phrase:', triggerPhrase);
+    
     const hasProductRecommendation = rawResponse.includes(triggerPhrase);
+    console.log('Contains trigger phrase:', hasProductRecommendation);
     
     // Strip the trigger phrase from the response
     const cleanedResponse = hasProductRecommendation 
-      ? rawResponse.replace(new RegExp(triggerPhrase, 'g'), '').trim()
+      ? rawResponse.replace(new RegExp(triggerPhrase.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'), 'g'), '').trim()
       : rawResponse;
+    
+    console.log('Cleaned response:', cleanedResponse);
     
     return {
       cleanedText: cleanedResponse,
