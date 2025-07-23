@@ -39,6 +39,14 @@ const FullPageChat = ({ onClose }: FullPageChatProps) => {
     scrollToBottom();
   }, [messages]);
 
+  // Track recommendation shown once per session
+  useEffect(() => {
+    if (showProductRecommendation && (window as any).FitTrack && !sessionStorage.getItem('rec_shown_once')) {
+      (window as any).FitTrack.recShown('supplement', 1);
+      sessionStorage.setItem('rec_shown_once', '1');
+    }
+  }, [showProductRecommendation]);
+
   // Load chat history when component mounts
   useEffect(() => {
     if (user) {
@@ -235,10 +243,8 @@ const FullPageChat = ({ onClose }: FullPageChatProps) => {
        (botResponseText.toLowerCase().includes('protein') || botResponseText.toLowerCase().includes('supplement')));
     
     // Set product recommendation state if detected
-    if (hasProductRecommendation && (window as any).FitTrack) {
+    if (hasProductRecommendation) {
       setShowProductRecommendation(true);
-      // Track recommendation shown - using generic category for now
-      (window as any).FitTrack.recShown('supplement', 1);
     }
     
     const botResponse: Message = {
@@ -376,7 +382,25 @@ const FullPageChat = ({ onClose }: FullPageChatProps) => {
                   <Button
                     key={index}
                     variant="outline"
-                    onClick={() => setInputValue(reply)}
+                    onClick={() => {
+                      setInputValue(reply);
+                      // Track goal selection for certain replies
+                      if ((window as any).FitTrack) {
+                        const goalMap: Record<string, string> = {
+                          "I'm feeling stressed and anxious": "stress",
+                          "I have trouble sleeping": "sleep",
+                          "I experience chronic fatigue": "energy",
+                          "How can I reduce inflammation?": "inflammation",
+                          "Help with pain management": "pain",
+                          "Improve my emotional balance": "emotional_balance"
+                        };
+                        const goal = goalMap[reply];
+                        if (goal) {
+                          setCurrentGoal(goal);
+                          (window as any).FitTrack.goalSelect(goal);
+                        }
+                      }
+                    }}
                     className="text-sm"
                   >
                     {reply}
@@ -418,7 +442,7 @@ const FullPageChat = ({ onClose }: FullPageChatProps) => {
             </Button>
           </div>
           <div className="text-xs text-muted-foreground mt-2 text-center">
-            FitMind.AI powered by advanced AI
+            FitMind AI powered by advanced AI
           </div>
         </div>
       </div>
