@@ -41,6 +41,12 @@ const FullPageChat = ({ onClose }: FullPageChatProps) => {
 
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
+  // Reset recommendation flags when conversation changes
+  useEffect(() => {
+    setRecommendationShownForConversation(false);
+    setShowProductRecommendation(false);
+  }, [conversationId]);
+
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   };
@@ -249,8 +255,10 @@ const FullPageChat = ({ onClose }: FullPageChatProps) => {
     console.log('🤖 AI response received:', JSON.stringify(aiResult, null, 2));
 
     const { response: botText, showRecommendation } = aiResult;
+    const shouldShow = Boolean(showRecommendation);   // guarantees boolean
+    
     console.log('📝 Bot message text:', botText);
-    console.log('🎯 Show recommendation flag:', showRecommendation, typeof showRecommendation);
+    console.log('🎯 Show recommendation flag:', shouldShow, typeof shouldShow);
 
     // Save bot message
     const botMessageId = await saveMessage(botText, true);
@@ -265,11 +273,11 @@ const FullPageChat = ({ onClose }: FullPageChatProps) => {
     setIsTyping(false);
 
     // Show recommendation component if AI indicates to do so
-    console.log('🎯 Show recommendation:', showRecommendation);
+    console.log('🎯 Show recommendation:', shouldShow);
     console.log('🎯 Current showProductRecommendation state:', showProductRecommendation);
     console.log('🎯 Recommendation shown for conversation:', recommendationShownForConversation);
     
-    if (showRecommendation) {
+    if (shouldShow && !recommendationShownForConversation) {
       console.log('🚀 Triggering product recommendation!');
       setShowProductRecommendation(true);
       setRecommendationShownForConversation(true);
