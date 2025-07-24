@@ -25,7 +25,7 @@ interface FullPageChatProps {
   onClose: () => void;
 }
 
-const TRIGGER_TOKEN = "🔁 show_components";
+const TRIGGER_TOKEN = "show_components";
 
 const FullPageChat = ({ onClose }: FullPageChatProps) => {
   const { user, signOut } = useAuth();
