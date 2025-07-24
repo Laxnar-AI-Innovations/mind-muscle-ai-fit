@@ -16,6 +16,10 @@ serve(async (req) => {
 
   try {
     const { message, conversationHistory = [] } = await req.json();
+    
+    console.log('🚀 Starting AI chat request');
+    console.log('📝 User message:', message);
+    console.log('📚 Conversation history length:', conversationHistory.length);
 
     if (!openAIApiKey) {
       throw new Error('OpenAI API key not configured');
@@ -106,9 +110,14 @@ You MUST respond with valid JSON in this exact format:
 
 RULES:
 - Always return valid JSON with "message" and "showRecommendation" fields
-- Set showRecommendation to true ONLY when user consents to see product recommendations
+- Set showRecommendation to true ONLY when user consents to see product recommendations (says "yes" when asked "Would you like me to show you...")
 - The message field contains your normal conversational response
-- Never include any other text outside the JSON object`
+- Never include any other text outside the JSON object
+
+EXAMPLE TRIGGER SCENARIOS:
+- User mentions sleep problems, you build rapport, then ask: "Would you like me to show you some natural sleep tools?" → User says "yes" → set showRecommendation: true
+- User talks about anxiety, you provide guidance, then ask: "Want me to show you some gentle, natural options for anxiety support?" → User says "yes" → set showRecommendation: true
+- User discusses fatigue, you explore causes, then ask: "Should I show you some energy-supporting supplements that might help?" → User says "yes" → set showRecommendation: true`
           },
            ...conversationHistory,
            { role: 'user', content: message }
@@ -125,22 +134,35 @@ RULES:
 
     const data = await response.json();
     const botResponse = data.choices[0].message.content;
+    
+    console.log('🤖 Raw OpenAI response:', botResponse);
+    console.log('🔍 Response type:', typeof botResponse);
 
     try {
       // Try to parse the AI response as JSON
       const parsedResponse = JSON.parse(botResponse);
+      console.log('✅ Successfully parsed JSON:', parsedResponse);
       
       // Validate the structure
       if (parsedResponse.message && typeof parsedResponse.showRecommendation === 'boolean') {
-        return new Response(JSON.stringify({
+        console.log('✅ Valid JSON structure, sending response');
+        console.log('📤 Sending showRecommendation:', parsedResponse.showRecommendation);
+        
+        const finalResponse = {
           response: parsedResponse.message,
           showRecommendation: parsedResponse.showRecommendation
-        }), {
+        };
+        
+        console.log('📦 Final response object:', finalResponse);
+        
+        return new Response(JSON.stringify(finalResponse), {
           headers: { ...corsHeaders, 'Content-Type': 'application/json' },
         });
       } else {
         // Fallback if JSON is malformed
-        console.warn('AI response not in expected JSON format:', botResponse);
+        console.warn('❌ AI response not in expected JSON format:', botResponse);
+        console.warn('❌ Missing fields - message:', !!parsedResponse.message, 'showRecommendation:', typeof parsedResponse.showRecommendation);
+        
         return new Response(JSON.stringify({
           response: botResponse,
           showRecommendation: false
@@ -150,7 +172,9 @@ RULES:
       }
     } catch (parseError) {
       // Fallback if response is not JSON
-      console.warn('Failed to parse AI response as JSON:', parseError);
+      console.error('❌ Failed to parse AI response as JSON:', parseError);
+      console.error('❌ Raw response that failed to parse:', botResponse);
+      
       return new Response(JSON.stringify({
         response: botResponse,
         showRecommendation: false

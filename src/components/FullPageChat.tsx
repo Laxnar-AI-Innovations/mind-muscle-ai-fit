@@ -190,12 +190,16 @@ const FullPageChat = ({ onClose }: FullPageChatProps) => {
       });
 
       if (error) {
-        console.error("Supabase function error:", error);
+        console.error("❌ Supabase function error:", error);
         return {
           response: "I'm having trouble connecting right now. Please try again in a moment.",
           showRecommendation: false
         };
       }
+
+      console.log('📦 Raw supabase function response:', data);
+      console.log('📤 Data fields:', Object.keys(data || {}));
+      console.log('🔍 showRecommendation value:', data?.showRecommendation, 'type:', typeof data?.showRecommendation);
 
       return {
         response: data.response,
@@ -241,9 +245,11 @@ const FullPageChat = ({ onClose }: FullPageChatProps) => {
 
     // Call AI
     const aiResult = await callAI(messageText);
-    console.log('🤖 AI response:', JSON.stringify(aiResult));
+    console.log('🤖 AI response received:', JSON.stringify(aiResult, null, 2));
 
     const { response: botText, showRecommendation } = aiResult;
+    console.log('📝 Bot message text:', botText);
+    console.log('🎯 Show recommendation flag:', showRecommendation, typeof showRecommendation);
 
     // Save bot message
     const botMessageId = await saveMessage(botText, true);
