@@ -37,6 +37,7 @@ const FullPageChat = ({ onClose }: FullPageChatProps) => {
   const [isLoading, setIsLoading] = useState(true);
   const [userMsgCount, setUserMsgCount] = useState(0);
   const [currentGoal, setCurrentGoal] = useState<string | null>(null);
+  const [recommendationShownForConversation, setRecommendationShownForConversation] = useState(false);
 
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
@@ -263,13 +264,15 @@ const FullPageChat = ({ onClose }: FullPageChatProps) => {
     setMessages((prev) => [...prev, botResponse]);
     setIsTyping(false);
 
-    // Show recommendation component if AI indicates to do so (only once)
+    // Show recommendation component if AI indicates to do so
     console.log('🎯 Show recommendation:', showRecommendation);
     console.log('🎯 Current showProductRecommendation state:', showProductRecommendation);
+    console.log('🎯 Recommendation shown for conversation:', recommendationShownForConversation);
     
-    if (showRecommendation && !showProductRecommendation) {
+    if (showRecommendation) {
       console.log('🚀 Triggering product recommendation!');
       setShowProductRecommendation(true);
+      setRecommendationShownForConversation(true);
     }
   };
 
@@ -429,7 +432,19 @@ const FullPageChat = ({ onClose }: FullPageChatProps) => {
       {showProductRecommendation && (
         <div className="border-t border-border bg-card/30 backdrop-blur-sm">
           <div className="max-w-4xl mx-auto px-4 py-6">
-            <ProductRecommendation onLinkClick={() => console.log("Product link clicked")} />
+            <div className="relative">
+              <button
+                onClick={() => {
+                  console.log('❌ Product recommendation dismissed');
+                  setShowProductRecommendation(false);
+                }}
+                className="absolute top-2 right-2 z-10 w-8 h-8 rounded-full bg-background/80 hover:bg-background border border-border flex items-center justify-center text-muted-foreground hover:text-foreground"
+                aria-label="Close recommendation"
+              >
+                ✕
+              </button>
+              <ProductRecommendation onLinkClick={() => console.log("Product link clicked")} />
+            </div>
           </div>
         </div>
       )}
@@ -437,15 +452,34 @@ const FullPageChat = ({ onClose }: FullPageChatProps) => {
       {/* Debug Test Button - Remove in production */}
       {process.env.NODE_ENV === 'development' && (
         <div className="border-t border-border bg-card/30 backdrop-blur-sm">
-          <div className="max-w-4xl mx-auto px-4 py-2">
+          <div className="max-w-4xl mx-auto px-4 py-2 flex gap-2">
             <button 
               onClick={() => {
-                console.log('🧪 Manual recommendation test');
+                console.log('🧪 Manual recommendation test - showing');
                 setShowProductRecommendation(true);
               }}
               className="text-xs bg-yellow-500 text-black px-2 py-1 rounded"
             >
-              Test Recommendation Trigger
+              Show Recommendation
+            </button>
+            <button 
+              onClick={() => {
+                console.log('🧪 Manual recommendation test - hiding');
+                setShowProductRecommendation(false);
+              }}
+              className="text-xs bg-red-500 text-white px-2 py-1 rounded"
+            >
+              Hide Recommendation
+            </button>
+            <button 
+              onClick={() => {
+                console.log('🧪 Reset recommendation state');
+                setShowProductRecommendation(false);
+                setRecommendationShownForConversation(false);
+              }}
+              className="text-xs bg-blue-500 text-white px-2 py-1 rounded"
+            >
+              Reset State
             </button>
           </div>
         </div>
