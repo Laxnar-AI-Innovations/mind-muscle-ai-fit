@@ -1,9 +1,7 @@
-// FullPageChat.tsx  (updated)
-// - Strips the trigger token "🔁 show_components" from bot text
-// - Triggers ProductRecommendation ONLY when that token is present (and only once)
-// - Removes old keyword/X_BRAND heuristic
-// - Fires Pixel recShown once (already in useEffect)
-// ----------------------------------------------------
+// FullPageChat.tsx - AI Wellness Chat with structured JSON responses
+// - Uses structured JSON responses from chat-with-ai function
+// - Triggers ProductRecommendation based on showRecommendation flag
+// - No post-processing needed, direct integration with AI responses
 
 import { useState, useRef, useEffect } from "react";
 import { Button } from "@/components/ui/button";
@@ -25,7 +23,7 @@ interface FullPageChatProps {
   onClose: () => void;
 }
 
-const TRIGGER_TOKEN = "show_components";
+
 
 const FullPageChat = ({ onClose }: FullPageChatProps) => {
   const { user, signOut } = useAuth();
@@ -177,39 +175,8 @@ const FullPageChat = ({ onClose }: FullPageChatProps) => {
     }
   };
 
-  const processAIResponse = async (aiResponse: string) => {
-    try {
-      console.log('🔍 Processing AI response with AI post-processor...');
-      
-      const { data, error } = await supabase.functions.invoke('ai-post-processor', {
-        body: { aiResponse }
-      });
 
-      if (error) {
-        console.error('Error in AI post-processor:', error);
-        // Fallback to simple string checking
-        return {
-          shouldTrigger: aiResponse.includes(TRIGGER_TOKEN),
-          cleanedResponse: aiResponse.replace(TRIGGER_TOKEN, '').trim(),
-          reasoning: 'Fallback due to post-processor error'
-        };
-      }
-
-      console.log('✅ AI post-processor result:', data);
-      return data;
-
-    } catch (error) {
-      console.error('Error calling AI post-processor:', error);
-      // Fallback to simple string checking
-      return {
-        shouldTrigger: aiResponse.includes(TRIGGER_TOKEN),
-        cleanedResponse: aiResponse.replace(TRIGGER_TOKEN, '').trim(),
-        reasoning: 'Fallback due to network error'
-      };
-    }
-  };
-
-  const callAI = async (userMessage: string) => {
+  const callAI = async (userMessage: string): Promise<{ response: string; showRecommendation: boolean }> => {
     try {
       const conversationHistory = messages.slice(1).map((msg) => ({
         role: msg.isBot ? "assistant" : "user",
@@ -225,13 +192,22 @@ const FullPageChat = ({ onClose }: FullPageChatProps) => {
 
       if (error) {
         console.error("Supabase function error:", error);
-        return "I'm having trouble connecting right now. Please try again in a moment.";
+        return {
+          response: "I'm having trouble connecting right now. Please try again in a moment.",
+          showRecommendation: false
+        };
       }
 
-      return data.response;
+      return {
+        response: data.response,
+        showRecommendation: data.showRecommendation || false
+      };
     } catch (error) {
       console.error("Error calling chat function:", error);
-      return "I'm having trouble connecting right now. Please try again in a moment.";
+      return {
+        response: "I'm having trouble connecting right now. Please try again in a moment.",
+        showRecommendation: false
+      };
     }
   };
 
@@ -265,24 +241,16 @@ const FullPageChat = ({ onClose }: FullPageChatProps) => {
     setMessages((prev) => [...prev, userMessage]);
 
     // Call AI
-    const botResponseText = await callAI(messageText);
-    console.log('🤖 Raw AI response:', JSON.stringify(botResponseText));
+    const aiResult = await callAI(messageText);
+    console.log('🤖 AI response:', JSON.stringify(aiResult));
 
-    // === AI-powered trigger detection ===
-    const analysisResult = await processAIResponse(botResponseText);
-    console.log('🧠 AI analysis result:', analysisResult);
-
-    const shouldTriggerProduct = analysisResult.shouldTrigger;
-    const cleanedBotText = analysisResult.cleanedResponse || botResponseText.trim();
-
-    console.log('🎯 Should trigger product:', shouldTriggerProduct);
-    console.log('🧹 Cleaned response:', cleanedBotText);
+    const { response: botText, showRecommendation } = aiResult;
 
     // Save bot message
-    const botMessageId = await saveMessage(cleanedBotText, true);
+    const botMessageId = await saveMessage(botText, true);
     const botResponse: Message = {
       id: botMessageId || `temp-bot-${Date.now()}`,
-      text: cleanedBotText,
+      text: botText,
       isBot: true,
       timestamp: new Date(),
     };
@@ -290,12 +258,11 @@ const FullPageChat = ({ onClose }: FullPageChatProps) => {
     setMessages((prev) => [...prev, botResponse]);
     setIsTyping(false);
 
-    // Show recommendation component if token present (only once)
-    console.log('🎯 shouldTriggerProduct:', shouldTriggerProduct);
+    // Show recommendation component if AI indicates to do so (only once)
+    console.log('🎯 Show recommendation:', showRecommendation);
     console.log('🎯 recTriggeredRef.current:', recTriggeredRef.current);
-    console.log('🎯 Current showProductRecommendation state:', showProductRecommendation);
     
-    if (shouldTriggerProduct && !recTriggeredRef.current) {
+    if (showRecommendation && !recTriggeredRef.current) {
       console.log('🚀 Triggering product recommendation!');
       recTriggeredRef.current = true;
       setShowProductRecommendation(true);
