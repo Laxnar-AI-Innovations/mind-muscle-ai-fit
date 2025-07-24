@@ -29,6 +29,8 @@ serve(async (req) => {
       },
       body: JSON.stringify({
         model: 'gpt-4o-mini',
+        response_format: { type: 'json_object' },
+        temperature: 0,
         messages: [
           {
             role: 'system',
@@ -110,8 +112,7 @@ RULES:
           },
            ...conversationHistory,
            { role: 'user', content: message }
-        ],
-        temperature: 0.7,
+         ],
         max_tokens: 1000
       }),
     });

@@ -39,7 +39,6 @@ const FullPageChat = ({ onClose }: FullPageChatProps) => {
   const [currentGoal, setCurrentGoal] = useState<string | null>(null);
 
   const messagesEndRef = useRef<HTMLDivElement>(null);
-  const recTriggeredRef = useRef(false); // ensure one trigger per session
 
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
@@ -260,11 +259,10 @@ const FullPageChat = ({ onClose }: FullPageChatProps) => {
 
     // Show recommendation component if AI indicates to do so (only once)
     console.log('🎯 Show recommendation:', showRecommendation);
-    console.log('🎯 recTriggeredRef.current:', recTriggeredRef.current);
+    console.log('🎯 Current showProductRecommendation state:', showProductRecommendation);
     
-    if (showRecommendation && !recTriggeredRef.current) {
+    if (showRecommendation && !showProductRecommendation) {
       console.log('🚀 Triggering product recommendation!');
-      recTriggeredRef.current = true;
       setShowProductRecommendation(true);
     }
   };
