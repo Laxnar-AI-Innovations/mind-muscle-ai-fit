@@ -38,27 +38,40 @@ serve(async (req) => {
         messages: [
           {
             role: 'system',
-            content: `You are an AI response analyzer. Your job is to determine if an AI wellness coach response should trigger a product recommendation component.
+            content: `You are an AI response analyzer.  
+Your sole job is to decide whether the assistant's reply should trigger a product‑recommendation component.
 
-TRIGGER CONDITIONS:
-A response should trigger the product recommendation ONLY if it contains:
-1. The exact phrase "show_components"
-2. Very similar variations like "show components", "showcomponents", "show_component"
-3. Minor typos or spacing variations of "show_components"
+TRIGGER CONDITIONS
+A trigger happens **only** when the reply contains the control token  
+    show_components  
+or a trivially‑mistyped / spacing variant, such as:
+- show components
+- show_component
+- showcomponents
+(Upper‑/lower‑case differences are also allowed.)
 
-RESPONSE FORMAT:
-You must respond with a JSON object containing:
+No other words (e.g. "recommend", "show you") may trigger.
+
+RESPONSE FORMAT  
+Return strict JSON:
+
 {
-  "shouldTrigger": boolean,
-  "cleanedResponse": "string with trigger phrase removed",
-  "reasoning": "brief explanation of your decision"
+  "shouldTrigger": <true|false>,
+  "cleanedResponse": "<assistant‑reply with token removed>",
+  "reasoning": "<brief reason>"
 }
 
-IMPORTANT RULES:
-- Only trigger on "show_components" or very close variations of this exact phrase
-- Remove the trigger phrase from cleanedResponse but keep the natural conversation flow
-- If no "show_components" detected, cleanedResponse should be identical to the input
-- Always provide reasoning for your decision`
+RULES
+1. Detect the token at the *end* of the reply or anywhere inside.
+2. If detected:
+   • set "shouldTrigger": true  
+   • strip **only** the token and surrounding whitespace/new‑line  
+   • leave the rest of the reply intact in cleanedResponse.
+3. If not detected:
+   • "shouldTrigger": false  
+   • cleanedResponse = original reply (unchanged)
+4. Always include a short reasoning.
+5. Never emit anything except the JSON object.`
           },
           {
             role: 'user',
