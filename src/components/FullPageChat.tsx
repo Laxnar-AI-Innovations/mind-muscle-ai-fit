@@ -177,6 +177,38 @@ const FullPageChat = ({ onClose }: FullPageChatProps) => {
     }
   };
 
+  const processAIResponse = async (aiResponse: string) => {
+    try {
+      console.log('🔍 Processing AI response with AI post-processor...');
+      
+      const { data, error } = await supabase.functions.invoke('ai-post-processor', {
+        body: { aiResponse }
+      });
+
+      if (error) {
+        console.error('Error in AI post-processor:', error);
+        // Fallback to simple string checking
+        return {
+          shouldTrigger: aiResponse.includes(TRIGGER_TOKEN),
+          cleanedResponse: aiResponse.replace(TRIGGER_TOKEN, '').trim(),
+          reasoning: 'Fallback due to post-processor error'
+        };
+      }
+
+      console.log('✅ AI post-processor result:', data);
+      return data;
+
+    } catch (error) {
+      console.error('Error calling AI post-processor:', error);
+      // Fallback to simple string checking
+      return {
+        shouldTrigger: aiResponse.includes(TRIGGER_TOKEN),
+        cleanedResponse: aiResponse.replace(TRIGGER_TOKEN, '').trim(),
+        reasoning: 'Fallback due to network error'
+      };
+    }
+  };
+
   const callAI = async (userMessage: string) => {
     try {
       const conversationHistory = messages.slice(1).map((msg) => ({
@@ -235,27 +267,16 @@ const FullPageChat = ({ onClose }: FullPageChatProps) => {
     // Call AI
     const botResponseText = await callAI(messageText);
     console.log('🤖 Raw AI response:', JSON.stringify(botResponseText));
-    console.log('🔍 Looking for trigger token:', JSON.stringify(TRIGGER_TOKEN));
 
-    // === Trigger token check ===
-    let cleanedBotText = botResponseText.trim();
-    let shouldTriggerProduct = false;
+    // === AI-powered trigger detection ===
+    const analysisResult = await processAIResponse(botResponseText);
+    console.log('🧠 AI analysis result:', analysisResult);
 
-    console.log('🧪 Checking if response ends with trigger token...');
-    console.log('🧪 cleanedBotText.endsWith(TRIGGER_TOKEN):', cleanedBotText.endsWith(TRIGGER_TOKEN));
-    console.log('🧪 cleanedBotText.includes(TRIGGER_TOKEN):', cleanedBotText.includes(TRIGGER_TOKEN));
+    const shouldTriggerProduct = analysisResult.shouldTrigger;
+    const cleanedBotText = analysisResult.cleanedResponse || botResponseText.trim();
 
-    if (cleanedBotText.endsWith(TRIGGER_TOKEN)) {
-      console.log('✅ Trigger token found at end! Setting shouldTriggerProduct = true');
-      shouldTriggerProduct = true;
-      cleanedBotText = cleanedBotText.replace(TRIGGER_TOKEN, "").trim();
-    } else if (cleanedBotText.includes(TRIGGER_TOKEN)) {
-      console.log('⚠️ Trigger token found but not at end! Setting shouldTriggerProduct = true anyway');
-      shouldTriggerProduct = true;
-      cleanedBotText = cleanedBotText.replace(TRIGGER_TOKEN, "").trim();
-    } else {
-      console.log('❌ No trigger token found in response');
-    }
+    console.log('🎯 Should trigger product:', shouldTriggerProduct);
+    console.log('🧹 Cleaned response:', cleanedBotText);
 
     // Save bot message
     const botMessageId = await saveMessage(cleanedBotText, true);
