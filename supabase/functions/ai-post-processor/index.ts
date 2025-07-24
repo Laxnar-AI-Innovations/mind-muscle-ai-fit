@@ -41,25 +41,23 @@ serve(async (req) => {
             content: `You are an AI response analyzer. Your job is to determine if an AI wellness coach response should trigger a product recommendation component.
 
 TRIGGER CONDITIONS:
-A response should trigger the product recommendation if it contains ANY of these elements:
-1. The exact phrase "show_components" 
-2. Any variation like "show components", "display products", "recommend products"
-3. Language indicating the AI is about to show/recommend wellness products
-4. Phrases like "I'll show you", "let me recommend", "here are some products", "tools that can help"
-5. Any indication that product recommendations are being offered
+A response should trigger the product recommendation ONLY if it contains:
+1. The exact phrase "show_components"
+2. Very similar variations like "show components", "showcomponents", "show_component"
+3. Minor typos or spacing variations of "show_components"
 
 RESPONSE FORMAT:
 You must respond with a JSON object containing:
 {
   "shouldTrigger": boolean,
-  "cleanedResponse": "string with any trigger phrases removed",
+  "cleanedResponse": "string with trigger phrase removed",
   "reasoning": "brief explanation of your decision"
 }
 
 IMPORTANT RULES:
-- Be liberal in detecting trigger intent - if there's any indication of product recommendation, set shouldTrigger to true
-- Remove any obvious trigger phrases from cleanedResponse but keep the natural conversation flow
-- If no trigger detected, cleanedResponse should be identical to the input
+- Only trigger on "show_components" or very close variations of this exact phrase
+- Remove the trigger phrase from cleanedResponse but keep the natural conversation flow
+- If no "show_components" detected, cleanedResponse should be identical to the input
 - Always provide reasoning for your decision`
           },
           {
