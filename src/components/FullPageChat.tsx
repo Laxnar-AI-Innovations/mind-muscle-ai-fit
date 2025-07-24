@@ -253,6 +253,7 @@ const FullPageChat = ({ onClose }: FullPageChatProps) => {
     // Call AI
     const aiResult = await callAI(messageText);
     console.log('🤖 AI response received:', JSON.stringify(aiResult, null, 2));
+    console.log('🔍 Raw showRecommendation value:', aiResult.showRecommendation, 'type:', typeof aiResult.showRecommendation);
 
     const { response: botText, showRecommendation } = aiResult;
     const shouldShow = Boolean(showRecommendation);   // guarantees boolean
