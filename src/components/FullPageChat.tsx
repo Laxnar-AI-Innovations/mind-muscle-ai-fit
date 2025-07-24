@@ -236,7 +236,7 @@ const FullPageChat = ({ onClose }: FullPageChatProps) => {
     if (newCount === 1 && (window as any).FitTrack) {
       (window as any).FitTrack.chatStart(currentGoal);
     }
-    if ((window as any).FitTrack) {
+    if ((window as any).FitTrack && typeof (window as any).FitTrack.qualifiedChat === 'function') {
       (window as any).FitTrack.qualifiedChat(newCount, currentGoal);
     }
 
