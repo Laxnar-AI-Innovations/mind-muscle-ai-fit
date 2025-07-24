@@ -434,6 +434,23 @@ const FullPageChat = ({ onClose }: FullPageChatProps) => {
         </div>
       )}
 
+      {/* Debug Test Button - Remove in production */}
+      {process.env.NODE_ENV === 'development' && (
+        <div className="border-t border-border bg-card/30 backdrop-blur-sm">
+          <div className="max-w-4xl mx-auto px-4 py-2">
+            <button 
+              onClick={() => {
+                console.log('🧪 Manual recommendation test');
+                setShowProductRecommendation(true);
+              }}
+              className="text-xs bg-yellow-500 text-black px-2 py-1 rounded"
+            >
+              Test Recommendation Trigger
+            </button>
+          </div>
+        </div>
+      )}
+
       {/* Input */}
       <div className="border-t border-border bg-card/50 backdrop-blur-sm sticky bottom-0">
         <div className="max-w-4xl mx-auto px-4 py-4">
