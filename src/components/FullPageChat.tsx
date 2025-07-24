@@ -277,11 +277,15 @@ const FullPageChat = ({ onClose }: FullPageChatProps) => {
     console.log('🎯 Show recommendation:', shouldShow);
     console.log('🎯 Current showProductRecommendation state:', showProductRecommendation);
     console.log('🎯 Recommendation shown for conversation:', recommendationShownForConversation);
+    console.log('🎯 Should trigger recommendation?', shouldShow && !recommendationShownForConversation);
     
     if (shouldShow && !recommendationShownForConversation) {
       console.log('🚀 Triggering product recommendation!');
       setShowProductRecommendation(true);
       setRecommendationShownForConversation(true);
+      console.log('🚀 State set - showProductRecommendation should now be true');
+    } else {
+      console.log('❌ Not triggering recommendation - shouldShow:', shouldShow, 'alreadyShown:', recommendationShownForConversation);
     }
   };
 
