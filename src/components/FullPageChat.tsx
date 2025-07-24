@@ -234,14 +234,27 @@ const FullPageChat = ({ onClose }: FullPageChatProps) => {
 
     // Call AI
     const botResponseText = await callAI(messageText);
+    console.log('🤖 Raw AI response:', JSON.stringify(botResponseText));
+    console.log('🔍 Looking for trigger token:', JSON.stringify(TRIGGER_TOKEN));
 
     // === Trigger token check ===
     let cleanedBotText = botResponseText.trim();
     let shouldTriggerProduct = false;
 
+    console.log('🧪 Checking if response ends with trigger token...');
+    console.log('🧪 cleanedBotText.endsWith(TRIGGER_TOKEN):', cleanedBotText.endsWith(TRIGGER_TOKEN));
+    console.log('🧪 cleanedBotText.includes(TRIGGER_TOKEN):', cleanedBotText.includes(TRIGGER_TOKEN));
+
     if (cleanedBotText.endsWith(TRIGGER_TOKEN)) {
+      console.log('✅ Trigger token found at end! Setting shouldTriggerProduct = true');
       shouldTriggerProduct = true;
       cleanedBotText = cleanedBotText.replace(TRIGGER_TOKEN, "").trim();
+    } else if (cleanedBotText.includes(TRIGGER_TOKEN)) {
+      console.log('⚠️ Trigger token found but not at end! Setting shouldTriggerProduct = true anyway');
+      shouldTriggerProduct = true;
+      cleanedBotText = cleanedBotText.replace(TRIGGER_TOKEN, "").trim();
+    } else {
+      console.log('❌ No trigger token found in response');
     }
 
     // Save bot message
@@ -257,7 +270,12 @@ const FullPageChat = ({ onClose }: FullPageChatProps) => {
     setIsTyping(false);
 
     // Show recommendation component if token present (only once)
+    console.log('🎯 shouldTriggerProduct:', shouldTriggerProduct);
+    console.log('🎯 recTriggeredRef.current:', recTriggeredRef.current);
+    console.log('🎯 Current showProductRecommendation state:', showProductRecommendation);
+    
     if (shouldTriggerProduct && !recTriggeredRef.current) {
+      console.log('🚀 Triggering product recommendation!');
       recTriggeredRef.current = true;
       setShowProductRecommendation(true);
     }
