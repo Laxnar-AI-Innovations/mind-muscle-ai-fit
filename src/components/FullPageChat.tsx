@@ -471,6 +471,9 @@ const FullPageChat = ({ onClose }: FullPageChatProps) => {
       {showProductRecommendation && (
         <div className="border-t border-border bg-card/30 backdrop-blur-sm">
           <div className="max-w-4xl mx-auto px-4 py-6">
+            <div className="mb-3 text-sm text-muted-foreground">
+              Recommended partner: USA Medical — US-made, lab-tested, organic supplements. We may earn a small commission if you purchase, at no extra cost to you.
+            </div>
             <div className="relative">
               <button
                 onClick={() => {
@@ -482,10 +485,11 @@ const FullPageChat = ({ onClose }: FullPageChatProps) => {
               >
                 ✕
               </button>
-              <ProductRecommendation onLinkClick={() => console.log("Product link clicked")} />
+              <ProductRecommendation compact onLinkClick={() => console.log("Product link clicked")} />
             </div>
           </div>
         </div>
+      
       )}
 
       {/* Debug Test Button - Remove in production */}

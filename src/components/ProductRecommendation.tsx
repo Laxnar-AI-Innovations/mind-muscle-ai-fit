@@ -9,13 +9,15 @@ interface ProductRecommendationProps {
   onLinkClick?: () => void;
   affiliateLink?: string;
   productImage?: string;
+  compact?: boolean;
 }
 
 const ProductRecommendation = ({ 
   productName = "USA Medical CBD Products", 
   onLinkClick, 
   affiliateLink = 'https://linksredirect.com/?cid=238930&source=linkkit&url=https%3A%2F%2Fusamedical.com%2Fen%2F',
-  productImage = "/lovable-uploads/e72d77ae-3d4e-43a1-9eb5-ae0f3bf48de0.png"
+  productImage = "/lovable-uploads/e72d77ae-3d4e-43a1-9eb5-ae0f3bf48de0.png",
+  compact = false,
 }: ProductRecommendationProps) => {
   const handleProductClick = () => {
     // Facebook Pixel tracking for product click
@@ -42,16 +44,16 @@ const ProductRecommendation = ({
       <CardContent className="p-0">
         <div className="flex flex-col lg:flex-row">
           {/* Product Image */}
-          <div className="lg:w-1/2 p-8 flex items-center justify-center bg-background/30">
+          <div className={`lg:w-1/2 ${compact ? "p-4" : "p-8"} flex items-center justify-center bg-background/30`}>
             <img 
               src={productImage} 
               alt={productName}
-              className="w-full max-w-[400px] h-auto object-contain rounded-lg"
+              className={`w-full ${compact ? "max-w-[280px]" : "max-w-[400px]"} h-auto object-contain rounded-lg`}
             />
           </div>
           
           {/* Product Details */}
-          <div className="lg:w-1/2 p-8 space-y-6">
+          <div className={`lg:w-1/2 ${compact ? "p-4" : "p-8"} space-y-6`}>
             <div className="space-y-4">
               <div className="flex items-center gap-3">
                 <Badge variant="secondary" className="bg-primary/10 text-primary text-base px-4 py-2">
@@ -64,8 +66,8 @@ const ProductRecommendation = ({
                   <span className="text-base text-muted-foreground ml-2">(4.8/5)</span>
                 </div>
               </div>
-              <CardTitle className="text-3xl">{productName}</CardTitle>
-              <CardDescription className="text-lg leading-relaxed">
+              <CardTitle className={compact ? "text-2xl" : "text-3xl"}>{productName}</CardTitle>
+              <CardDescription className={compact ? "text-base leading-relaxed" : "text-lg leading-relaxed"}>
                 Professional-grade organic supplements specifically recommended based on your fitness goals and nutritional needs.
               </CardDescription>
             </div>
@@ -87,8 +89,8 @@ const ProductRecommendation = ({
             
             <div className="flex gap-4 pt-4">
               <Button 
-                size="lg"
-                className="flex-1 gap-3 bg-gradient-to-r from-primary to-neon-green hover:from-primary/90 hover:to-neon-green/90 text-lg py-6" 
+                size={compact ? "default" : "lg"}
+                className={`flex-1 gap-3 bg-gradient-to-r from-primary to-neon-green hover:from-primary/90 hover:to-neon-green/90 ${compact ? "text-base py-4" : "text-lg py-6"}`} 
                 onClick={handleProductClick}
               >
                 <ShoppingCart className="h-5 w-5" />
@@ -96,9 +98,9 @@ const ProductRecommendation = ({
                 <ExternalLink className="h-4 w-4" />
               </Button>
               <Button 
-                size="lg"
+                size={compact ? "default" : "lg"}
                 variant="outline" 
-                className="gap-3 border-primary/20 hover:bg-primary/5 text-lg py-6 px-8" 
+                className={`gap-3 border-primary/20 hover:bg-primary/5 ${compact ? "text-base py-4 px-6" : "text-lg py-6 px-8"}`} 
                 onClick={handleLearnMoreClick}
               >
                 Learn More
