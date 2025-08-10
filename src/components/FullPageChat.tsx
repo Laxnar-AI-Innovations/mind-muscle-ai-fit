@@ -23,8 +23,6 @@ interface FullPageChatProps {
   onClose: () => void;
 }
 
-
-
 const FullPageChat = ({ onClose }: FullPageChatProps) => {
   const { user, signOut } = useAuth();
   const { firstName } = useUserProfile();
@@ -38,6 +36,7 @@ const FullPageChat = ({ onClose }: FullPageChatProps) => {
   const [userMsgCount, setUserMsgCount] = useState(0);
   const [currentGoal, setCurrentGoal] = useState<string | null>(null);
   const [recommendationShownForConversation, setRecommendationShownForConversation] = useState(false);
+  const [waitingForRecommendationConsent, setWaitingForRecommendationConsent] = useState(false);
 
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
@@ -45,6 +44,7 @@ const FullPageChat = ({ onClose }: FullPageChatProps) => {
   useEffect(() => {
     setRecommendationShownForConversation(false);
     setShowProductRecommendation(false);
+    setWaitingForRecommendationConsent(false);
   }, [conversationId]);
 
   const scrollToBottom = () => {
@@ -181,7 +181,6 @@ const FullPageChat = ({ onClose }: FullPageChatProps) => {
     }
   };
 
-
   const callAI = async (userMessage: string): Promise<{ response: string; showRecommendation: boolean }> => {
     try {
       const conversationHistory = messages.slice(1).map((msg) => ({
@@ -221,6 +220,26 @@ const FullPageChat = ({ onClose }: FullPageChatProps) => {
     }
   };
 
+  // Check if user message indicates consent for recommendations
+  const checkForRecommendationConsent = (messageText: string): boolean => {
+    const lowerMessage = messageText.toLowerCase().trim();
+    const positiveResponses = ['yes', 'yeah', 'sure', 'ok', 'okay', 'please', 'show me', 'i would like', 'that would be great', 'sounds good'];
+    const negativeResponses = ['no', 'nah', 'not now', 'maybe later', 'not interested'];
+    
+    // Check for positive responses
+    if (positiveResponses.some(response => lowerMessage.includes(response))) {
+      return true;
+    }
+    
+    // Check for negative responses
+    if (negativeResponses.some(response => lowerMessage.includes(response))) {
+      setWaitingForRecommendationConsent(false);
+      return false;
+    }
+    
+    return false;
+  };
+
   const handleSendMessage = async () => {
     if (!inputValue.trim()) return;
 
@@ -231,6 +250,22 @@ const FullPageChat = ({ onClose }: FullPageChatProps) => {
     // Track user message count
     const newCount = userMsgCount + 1;
     setUserMsgCount(newCount);
+
+    // Check if user is responding to recommendation consent request
+    if (waitingForRecommendationConsent) {
+      const userConsented = checkForRecommendationConsent(messageText);
+      console.log('🎯 User consent check:', userConsented, 'for message:', messageText);
+      
+      if (userConsented && !recommendationShownForConversation) {
+        console.log('🚀 User consented! Showing product recommendation');
+        setShowProductRecommendation(true);
+        setRecommendationShownForConversation(true);
+        setWaitingForRecommendationConsent(false);
+      } else if (!userConsented) {
+        console.log('❌ User declined recommendation');
+        setWaitingForRecommendationConsent(false);
+      }
+    }
 
     // Pixel events
     if (newCount === 1 && (window as any).FitTrack) {
@@ -256,7 +291,7 @@ const FullPageChat = ({ onClose }: FullPageChatProps) => {
     console.log('🔍 Raw showRecommendation value:', aiResult.showRecommendation, 'type:', typeof aiResult.showRecommendation);
 
     const { response: botText, showRecommendation } = aiResult;
-    const shouldShow = Boolean(showRecommendation);   // guarantees boolean
+    const shouldShow = Boolean(showRecommendation);
     
     console.log('📝 Bot message text:', botText);
     console.log('🎯 Show recommendation flag:', shouldShow, typeof shouldShow);
@@ -273,19 +308,10 @@ const FullPageChat = ({ onClose }: FullPageChatProps) => {
     setMessages((prev) => [...prev, botResponse]);
     setIsTyping(false);
 
-    // Show recommendation component if AI indicates to do so
-    console.log('🎯 Show recommendation:', shouldShow);
-    console.log('🎯 Current showProductRecommendation state:', showProductRecommendation);
-    console.log('🎯 Recommendation shown for conversation:', recommendationShownForConversation);
-    console.log('🎯 Should trigger recommendation?', shouldShow && !recommendationShownForConversation);
-    
+    // Check if AI is asking for recommendation consent (instead of showing immediately)
     if (shouldShow && !recommendationShownForConversation) {
-      console.log('🚀 Triggering product recommendation!');
-      setShowProductRecommendation(true);
-      setRecommendationShownForConversation(true);
-      console.log('🚀 State set - showProductRecommendation should now be true');
-    } else {
-      console.log('❌ Not triggering recommendation - shouldShow:', shouldShow, 'alreadyShown:', recommendationShownForConversation);
+      console.log('🎯 AI is asking for recommendation consent');
+      setWaitingForRecommendationConsent(true);
     }
   };
 
@@ -489,6 +515,7 @@ const FullPageChat = ({ onClose }: FullPageChatProps) => {
                 console.log('🧪 Reset recommendation state');
                 setShowProductRecommendation(false);
                 setRecommendationShownForConversation(false);
+                setWaitingForRecommendationConsent(false);
               }}
               className="text-xs bg-blue-500 text-white px-2 py-1 rounded"
             >
