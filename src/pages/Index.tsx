@@ -10,7 +10,7 @@ import Features from "@/components/Features";
 import Testimonials from "@/components/Testimonials";
 import ChatBot from "@/components/ChatBot";
 import Footer from "@/components/Footer";
-import AnimatedBackground from "@/components/AnimatedBackground";
+import Animated3DBackground from "@/components/Animated3DBackground";
 const Index = () => {
   const [showChat, setShowChat] = useState(false);
   const { user, loading, signOut } = useAuth();
@@ -57,7 +57,7 @@ const Index = () => {
 
   return (
     <div className="relative min-h-screen bg-background">
-      <AnimatedBackground />
+      <Animated3DBackground />
       <div className="absolute top-4 right-4 z-50 flex items-center gap-2">
         {user && (
           <div className="flex items-center gap-2 bg-background/80 backdrop-blur-sm rounded-lg px-3 py-2 border">

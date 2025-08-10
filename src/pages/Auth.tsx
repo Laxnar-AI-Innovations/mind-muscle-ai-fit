@@ -9,7 +9,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 import { Navigate } from "react-router-dom";
 import { Mail, Lock, User, ArrowLeft } from "lucide-react";
-import AnimatedBackground from "@/components/AnimatedBackground";
+import Animated3DBackground from "@/components/Animated3DBackground";
 const Auth = () => {
   const [isSignUp, setIsSignUp] = useState(false);
   const [name, setName] = useState("");
@@ -139,7 +139,7 @@ const Auth = () => {
 
   return (
     <div className="relative min-h-screen bg-gradient-to-br from-background via-primary/5 to-secondary flex items-center justify-center p-4">
-      <AnimatedBackground />
+      <Animated3DBackground />
       
       <div className="relative z-10 w-full max-w-md">
         <div className="mb-8 text-center">
