@@ -12,6 +12,7 @@ import { useAuth } from "@/hooks/useAuth";
 import { useUserProfile } from "@/hooks/useUserProfile";
 import ProductRecommendation from "./ProductRecommendation";
 import TypewriterText from "@/components/ui/typewriter-text";
+import AffiliateProducts from "./AffiliateProducts";
 interface Message {
   id: string;
   text: string;
@@ -490,6 +491,9 @@ const FullPageChat = ({ onClose }: FullPageChatProps) => {
                 ✕
               </button>
               <ProductRecommendation compact onLinkClick={() => console.log("Product link clicked")} />
+              <div className="mt-6 border-t border-border pt-6">
+                <AffiliateProducts compact limit={2} />
+              </div>
             </div>
           </div>
         </div>

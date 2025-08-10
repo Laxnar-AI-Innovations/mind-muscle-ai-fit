@@ -3,7 +3,7 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Star, Zap, Award, ShieldCheck } from "lucide-react";
 
-const AffiliateProducts = () => {
+const AffiliateProducts = ({ compact = false, limit = 3 }: { compact?: boolean; limit?: number }) => {
   const products = [
     {
       title: "Premium Whey Protein",
@@ -47,27 +47,29 @@ const AffiliateProducts = () => {
   ];
 
   return (
-    <section className="py-20 px-6 bg-gradient-to-b from-background to-dark-card">
-      <div className="max-w-7xl mx-auto">
-        <div className="text-center mb-16">
-          <div className="inline-flex items-center gap-2 px-4 py-2 bg-primary/10 text-primary rounded-full font-medium mb-6">
-            <Award className="w-4 h-4" />
-            Your Trainer Recommends
+    <section className={`${compact ? "py-6 px-0 bg-transparent" : "py-20 px-6 bg-gradient-to-b from-background to-secondary"}`}>
+      <div className={`${compact ? "max-w-4xl" : "max-w-7xl"} mx-auto`}>
+        {!compact && (
+          <div className="text-center mb-16">
+            <div className="inline-flex items-center gap-2 px-4 py-2 bg-primary/10 text-primary rounded-full font-medium mb-6">
+              <Award className="w-4 h-4" />
+              Your Trainer Recommends
+            </div>
+            <h2 className="text-4xl md:text-5xl font-bold mb-6">
+              Handpicked by
+              <span className="block bg-gradient-to-r from-primary to-neon-blue bg-clip-text text-transparent">
+                AI Fitness Experts
+              </span>
+            </h2>
+            <p className="text-xl text-muted-foreground max-w-3xl mx-auto">
+              Based on thousands of successful fitness transformations, these products consistently 
+              deliver results for our community.
+            </p>
           </div>
-          <h2 className="text-4xl md:text-5xl font-bold mb-6">
-            Handpicked by
-            <span className="block bg-gradient-to-r from-primary to-neon-blue bg-clip-text text-transparent">
-              AI Fitness Experts
-            </span>
-          </h2>
-          <p className="text-xl text-muted-foreground max-w-3xl mx-auto">
-            Based on thousands of successful fitness transformations, these products consistently 
-            deliver results for our community.
-          </p>
-        </div>
+        )}
 
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-          {products.map((product, index) => (
+          {products.slice(0, limit).map((product, index) => (
             <Card 
               key={index}
               className="bg-card/50 backdrop-blur-sm border-border/50 hover:border-primary/50 transition-all duration-300 group hover:transform hover:scale-105 overflow-hidden"
@@ -127,7 +129,7 @@ const AffiliateProducts = () => {
                 </div>
 
                 <Button 
-                  className="w-full bg-gradient-to-r from-primary to-neon-green hover:from-primary/90 hover:to-neon-green/90 transition-all duration-300"
+                  className="w-full bg-gradient-to-r from-primary to-neon-blue hover:from-primary/90 hover:to-neon-blue/90 transition-all duration-300"
                   onClick={() => window.open(product.link, '_blank')}
                 >
                   <Zap className="w-4 h-4 mr-2" />
@@ -138,36 +140,38 @@ const AffiliateProducts = () => {
           ))}
         </div>
 
-        <div className="mt-16 text-center">
-          <div className="p-8 bg-gradient-to-r from-primary/10 to-neon-blue/10 rounded-2xl border border-primary/20">
-            <h3 className="text-2xl font-bold mb-4 text-foreground">
-              Why These Products?
-            </h3>
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-              <div className="text-center">
-                <div className="w-12 h-12 bg-primary/20 rounded-full flex items-center justify-center mx-auto mb-3">
-                  <Award className="w-6 h-6 text-primary" />
+        {!compact && (
+          <div className="mt-16 text-center">
+            <div className="p-8 bg-gradient-to-r from-primary/10 to-neon-blue/10 rounded-2xl border border-primary/20">
+              <h3 className="text-2xl font-bold mb-4 text-foreground">
+                Why These Products?
+              </h3>
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <div className="text-center">
+                  <div className="w-12 h-12 bg-primary/20 rounded-full flex items-center justify-center mx-auto mb-3">
+                    <Award className="w-6 h-6 text-primary" />
+                  </div>
+                  <div className="font-medium text-foreground mb-1">AI-Validated</div>
+                  <div className="text-sm text-muted-foreground">Proven results from our user data</div>
                 </div>
-                <div className="font-medium text-foreground mb-1">AI-Validated</div>
-                <div className="text-sm text-muted-foreground">Proven results from our user data</div>
-              </div>
-              <div className="text-center">
-                <div className="w-12 h-12 bg-neon-blue/20 rounded-full flex items-center justify-center mx-auto mb-3">
-                  <ShieldCheck className="w-6 h-6 text-neon-blue" />
+                <div className="text-center">
+                  <div className="w-12 h-12 bg-neon-blue/20 rounded-full flex items-center justify-center mx-auto mb-3">
+                    <ShieldCheck className="w-6 h-6 text-neon-blue" />
+                  </div>
+                  <div className="font-medium text-foreground mb-1">Quality Tested</div>
+                  <div className="text-sm text-muted-foreground">Rigorous quality and safety standards</div>
                 </div>
-                <div className="font-medium text-foreground mb-1">Quality Tested</div>
-                <div className="text-sm text-muted-foreground">Rigorous quality and safety standards</div>
-              </div>
-              <div className="text-center">
-                <div className="w-12 h-12 bg-primary/20 rounded-full flex items-center justify-center mx-auto mb-3">
-                  <Star className="w-6 h-6 text-primary" />
+                <div className="text-center">
+                  <div className="w-12 h-12 bg-primary/20 rounded-full flex items-center justify-center mx-auto mb-3">
+                    <Star className="w-6 h-6 text-primary" />
+                  </div>
+                  <div className="font-medium text-foreground mb-1">Community Favorite</div>
+                  <div className="text-sm text-muted-foreground">Top-rated by our fitness community</div>
                 </div>
-                <div className="font-medium text-foreground mb-1">Community Favorite</div>
-                <div className="text-sm text-muted-foreground">Top-rated by our fitness community</div>
               </div>
             </div>
           </div>
-        </div>
+        )}
       </div>
     </section>
   );
