@@ -11,7 +11,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
 import { useUserProfile } from "@/hooks/useUserProfile";
 import ProductRecommendation from "./ProductRecommendation";
-
+import TypewriterText from "@/components/ui/typewriter-text";
 interface Message {
   id: string;
   text: string;
@@ -350,7 +350,7 @@ const FullPageChat = ({ onClose }: FullPageChatProps) => {
           </Button>
 
           <div className="flex items-center gap-3">
-            <div className="w-10 h-10 bg-gradient-to-r from-primary to-neon-green rounded-full flex items-center justify-center">
+            <div className="w-10 h-10 bg-gradient-to-r from-primary to-neon-blue rounded-full flex items-center justify-center">
               <Brain className="w-5 h-5 text-white" />
             </div>
             <div>
@@ -382,11 +382,11 @@ const FullPageChat = ({ onClose }: FullPageChatProps) => {
       <div className="flex-1 overflow-y-auto">
         <div className="max-w-4xl mx-auto px-4 py-6">
           <div className="space-y-6">
-            {messages.map((message) => (
+            {messages.map((message, index) => (
               <div key={message.id} className={`flex gap-4 ${message.isBot ? "" : "flex-row-reverse"}`}>
                 <div
                   className={`w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0 ${
-                    message.isBot ? "bg-gradient-to-r from-primary to-neon-green" : "bg-muted"
+                    message.isBot ? "bg-gradient-to-r from-primary to-neon-blue" : "bg-muted"
                   }`}
                 >
                   {message.isBot ? <Brain className="w-4 h-4 text-white" /> : <User className="w-4 h-4" />}
@@ -396,10 +396,14 @@ const FullPageChat = ({ onClose }: FullPageChatProps) => {
                     className={`inline-block p-4 rounded-lg ${
                       message.isBot
                         ? "bg-muted text-foreground"
-                        : "bg-gradient-to-r from-primary to-neon-green text-white"
+                        : "bg-gradient-to-r from-primary to-neon-blue text-white"
                     }`}
                   >
-                    <div className="whitespace-pre-line">{message.text}</div>
+                    {message.isBot ? (
+                      <TypewriterText text={message.text} animate={!isTyping && index === messages.length - 1} />
+                    ) : (
+                      <div className="whitespace-pre-line">{message.text}</div>
+                    )}
                   </div>
                   <div className="text-xs text-muted-foreground mt-1">
                     {message.timestamp.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}
@@ -410,7 +414,7 @@ const FullPageChat = ({ onClose }: FullPageChatProps) => {
 
             {isTyping && (
               <div className="flex gap-4">
-                <div className="w-8 h-8 rounded-full bg-gradient-to-r from-primary to-neon-green flex items-center justify-center flex-shrink-0">
+                <div className="w-8 h-8 rounded-full bg-gradient-to-r from-primary to-neon-blue flex items-center justify-center flex-shrink-0">
                   <Brain className="w-4 h-4 text-white" />
                 </div>
                 <div className="flex-1 max-w-2xl">
@@ -472,7 +476,7 @@ const FullPageChat = ({ onClose }: FullPageChatProps) => {
         <div className="border-t border-border bg-card/30 backdrop-blur-sm">
           <div className="max-w-4xl mx-auto px-4 py-6">
             <div className="mb-3 text-sm text-muted-foreground">
-              Recommended partner: USA Medical — US-made, lab-tested, organic supplements. We may earn a small commission if you purchase, at no extra cost to you.
+              Recommended partner: USA Medical — US-made, lab-tested, organic supplements.
             </div>
             <div className="relative">
               <button
@@ -544,7 +548,7 @@ const FullPageChat = ({ onClose }: FullPageChatProps) => {
             <Button
               onClick={handleSendMessage}
               disabled={!inputValue.trim() || isTyping}
-              className="bg-gradient-to-r from-primary to-neon-green hover:from-primary/90 hover:to-neon-green/90"
+              className="bg-gradient-to-r from-primary to-neon-blue hover:from-primary/90 hover:to-neon-blue/90"
             >
               <Send className="w-4 h-4" />
             </Button>

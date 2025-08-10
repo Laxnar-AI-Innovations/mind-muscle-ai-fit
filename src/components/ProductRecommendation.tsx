@@ -90,7 +90,7 @@ const ProductRecommendation = ({
             <div className="flex gap-4 pt-4">
               <Button 
                 size={compact ? "default" : "lg"}
-                className={`flex-1 gap-3 bg-gradient-to-r from-primary to-neon-green hover:from-primary/90 hover:to-neon-green/90 ${compact ? "text-base py-4" : "text-lg py-6"}`} 
+                className={`flex-1 gap-3 bg-gradient-to-r from-primary to-neon-blue hover:from-primary/90 hover:to-neon-blue/90 ${compact ? "text-base py-4" : "text-lg py-6"}`} 
                 onClick={handleProductClick}
               >
                 <ShoppingCart className="h-5 w-5" />
