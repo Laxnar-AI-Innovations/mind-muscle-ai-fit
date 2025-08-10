@@ -13,10 +13,10 @@ const Hero = ({ onOpenChat }: { onOpenChat: () => void }) => {
   };
 
   return (
-    <section className="relative min-h-screen flex items-center justify-center bg-gradient-to-br from-background via-dark-bg to-dark-card overflow-hidden">
+    <section className="relative min-h-screen flex items-center justify-center bg-gradient-to-br from-background via-primary/5 to-secondary overflow-hidden">
       {/* Background Effects */}
-      <div className="absolute inset-0 bg-gradient-to-r from-neon-green/10 via-transparent to-neon-blue/10" />
-      <div className="absolute top-20 left-20 w-72 h-72 bg-neon-green/20 rounded-full blur-3xl animate-pulse" />
+      <div className="absolute inset-0 bg-gradient-to-r from-primary/10 via-transparent to-neon-blue/10" />
+      <div className="absolute top-20 left-20 w-72 h-72 bg-primary/20 rounded-full blur-3xl animate-pulse" />
       <div className="absolute bottom-20 right-20 w-96 h-96 bg-neon-blue/20 rounded-full blur-3xl animate-pulse delay-1000" />
       
       {/* Content */}
@@ -35,7 +35,7 @@ const Hero = ({ onOpenChat }: { onOpenChat: () => void }) => {
         
         <h1 className="text-5xl md:text-7xl font-bold bg-gradient-to-r from-primary via-neon-blue to-primary bg-clip-text text-transparent mb-6 leading-tight">
           Train Smarter with<br />
-          <span className="text-neon-green">FitMind.AI</span>
+          <span className="text-primary">FitMind.AI</span>
         </h1>
         
         <p className="text-xl md:text-2xl text-muted-foreground mb-8 max-w-3xl mx-auto leading-relaxed">
@@ -51,7 +51,7 @@ const Hero = ({ onOpenChat }: { onOpenChat: () => void }) => {
           <Button 
             size="lg" 
             onClick={user ? onOpenChat : handleSignIn}
-            className="text-lg px-8 py-6 transition-all duration-300 shadow-lg transform bg-gradient-to-r from-primary to-neon-green hover:from-primary/90 hover:to-neon-green/90 hover:shadow-xl hover:scale-105"
+            className="text-lg px-8 py-6 transition-all duration-300 shadow-lg transform bg-gradient-to-r from-primary to-neon-blue hover:from-primary/90 hover:to-neon-blue/90 hover:shadow-xl hover:scale-105"
           >
             <Zap className="w-5 h-5 mr-2" />
             {user ? "Chat With Your AI Trainer" : "Chat With Your AI Trainer – Free"}

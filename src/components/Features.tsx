@@ -7,7 +7,7 @@ const Features = () => {
       icon: Brain,
       title: "Personalized AI Workouts",
       description: "Smart exercise routines adapted to your fitness level, goals, and equipment availability.",
-      gradient: "from-primary to-neon-green"
+      gradient: "from-primary to-neon-blue"
     },
     {
       icon: Utensils,
@@ -19,7 +19,7 @@ const Features = () => {
       icon: TrendingUp,
       title: "Live Progress Tracking",
       description: "Real-time monitoring of your fitness journey with data-driven insights and adjustments.",
-      gradient: "from-neon-green to-neon-blue"
+      gradient: "from-primary to-neon-blue"
     },
     {
       icon: MessageCircle,
@@ -31,18 +31,18 @@ const Features = () => {
       icon: Zap,
       title: "Smart Supplement Recommendations",
       description: "Science-based supplement suggestions to optimize your performance and recovery.",
-      gradient: "from-neon-blue to-neon-green"
+      gradient: "from-neon-blue to-primary"
     },
     {
       icon: Target,
       title: "Goal-Oriented Training",
       description: "Focused workout plans designed specifically for weight loss, muscle gain, or endurance.",
-      gradient: "from-neon-green to-primary"
+      gradient: "from-primary to-neon-blue"
     }
   ];
 
   return (
-    <section className="py-20 px-6 bg-gradient-to-b from-background to-dark-card">
+    <section className="py-20 px-6 bg-gradient-to-b from-background to-secondary">
       <div className="max-w-7xl mx-auto">
         <div className="text-center mb-16">
           <h2 className="text-4xl md:text-5xl font-bold mb-6">
