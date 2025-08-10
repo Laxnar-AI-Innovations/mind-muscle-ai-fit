@@ -12,6 +12,7 @@ import { useAuth } from "@/hooks/useAuth";
 import { useUserProfile } from "@/hooks/useUserProfile";
 import ProductRecommendation from "./ProductRecommendation";
 import TypewriterText from "@/components/ui/typewriter-text";
+import AnimatedBackground from "@/components/AnimatedBackground";
 import AffiliateProducts from "./AffiliateProducts";
 interface Message {
   id: string;
@@ -337,7 +338,8 @@ const FullPageChat = ({ onClose }: FullPageChatProps) => {
   }
 
   return (
-    <div className="min-h-screen bg-background flex flex-col">
+    <div className="relative min-h-screen bg-background flex flex-col">
+      <AnimatedBackground />
       {/* Header */}
       <div className="border-b border-border bg-card/50 backdrop-blur-sm sticky top-0 z-10">
         <div className="max-w-4xl mx-auto px-4 py-4 flex items-center justify-between">

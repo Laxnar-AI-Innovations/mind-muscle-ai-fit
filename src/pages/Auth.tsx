@@ -9,7 +9,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 import { Navigate } from "react-router-dom";
 import { Mail, Lock, User, ArrowLeft } from "lucide-react";
-
+import AnimatedBackground from "@/components/AnimatedBackground";
 const Auth = () => {
   const [isSignUp, setIsSignUp] = useState(false);
   const [name, setName] = useState("");
@@ -138,11 +138,8 @@ const Auth = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-background via-dark-bg to-dark-card flex items-center justify-center p-4">
-      {/* Background Effects */}
-      <div className="absolute inset-0 bg-gradient-to-r from-neon-green/10 via-transparent to-neon-blue/10" />
-      <div className="absolute top-20 left-20 w-72 h-72 bg-neon-green/20 rounded-full blur-3xl animate-pulse" />
-      <div className="absolute bottom-20 right-20 w-96 h-96 bg-neon-blue/20 rounded-full blur-3xl animate-pulse delay-1000" />
+    <div className="relative min-h-screen bg-gradient-to-br from-background via-primary/5 to-secondary flex items-center justify-center p-4">
+      <AnimatedBackground />
       
       <div className="relative z-10 w-full max-w-md">
         <div className="mb-8 text-center">
@@ -154,7 +151,7 @@ const Auth = () => {
             <ArrowLeft className="w-4 h-4 mr-2" />
             Back
           </Button>
-          <h1 className="text-3xl font-bold bg-gradient-to-r from-primary to-neon-green bg-clip-text text-transparent">
+          <h1 className="text-3xl font-bold bg-gradient-to-r from-primary to-neon-blue bg-clip-text text-transparent">
             FitMind.AI
           </h1>
           <p className="text-muted-foreground mt-2">
@@ -249,7 +246,7 @@ const Auth = () => {
 
               <Button
                 type="submit"
-                className="w-full bg-gradient-to-r from-primary to-neon-green hover:from-primary/90 hover:to-neon-green/90"
+                className="w-full bg-gradient-to-r from-primary to-neon-blue hover:from-primary/90 hover:to-neon-blue/90"
                 disabled={isLoading}
               >
                 {isLoading ? "Please wait..." : (isSignUp ? "Sign Up" : "Sign In")}
