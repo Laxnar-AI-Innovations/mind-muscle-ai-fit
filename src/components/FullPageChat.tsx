@@ -342,47 +342,91 @@ const FullPageChat = ({ onClose }: FullPageChatProps) => {
       <Animated3DBackground />
       {/* Header */}
       <div className="border-b border-border bg-card/50 backdrop-blur-sm sticky top-0 z-10">
-        <div className="max-w-4xl mx-auto px-4 py-4 flex items-center justify-between">
-          <Button
-            variant="ghost"
-            onClick={onClose}
-            className="flex items-center gap-2 text-muted-foreground hover:text-foreground"
-          >
-            <ArrowLeft className="w-4 h-4" />
-            Back to Home
-          </Button>
-
-          <div className="flex items-center gap-3">
-            <div className="w-10 h-10 bg-gradient-to-r from-primary to-neon-blue rounded-full flex items-center justify-center">
-              <Brain className="w-5 h-5 text-white" />
-            </div>
-            <div>
-              <h1 className="font-semibold text-lg">FitMind AI</h1>
-              <div className="text-sm text-muted-foreground flex items-center gap-1">
-                <div className="w-2 h-2 bg-primary rounded-full animate-pulse"></div>
-                {user ? "Chat History Enabled" : "Guest Mode"}
-              </div>
-            </div>
-          </div>
-
-          {user && (
+        <div className="max-w-4xl mx-auto px-2 sm:px-4 py-3 sm:py-4">
+          {/* Mobile Layout */}
+          <div className="flex sm:hidden items-center justify-between gap-2">
             <Button
               variant="ghost"
-              onClick={async () => {
-                await signOut();
-                onClose();
-              }}
+              size="sm"
+              onClick={onClose}
+              className="flex items-center gap-1 text-muted-foreground hover:text-foreground p-2"
+            >
+              <ArrowLeft className="w-4 h-4" />
+              <span className="text-xs">Home</span>
+            </Button>
+
+            <div className="flex items-center gap-2 flex-1 justify-center">
+              <div className="w-8 h-8 bg-gradient-to-r from-primary to-neon-blue rounded-full flex items-center justify-center">
+                <Brain className="w-4 h-4 text-white" />
+              </div>
+              <div>
+                <h1 className="font-semibold text-sm">FitMind AI</h1>
+                <div className="text-xs text-muted-foreground flex items-center gap-1">
+                  <div className="w-1.5 h-1.5 bg-primary rounded-full animate-pulse"></div>
+                  {user ? "History" : "Guest"}
+                </div>
+              </div>
+            </div>
+
+            {user && (
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={async () => {
+                  await signOut();
+                  onClose();
+                }}
+                className="flex items-center gap-1 text-muted-foreground hover:text-foreground p-2"
+              >
+                <LogOut className="w-4 h-4" />
+                <span className="text-xs">Exit</span>
+              </Button>
+            )}
+          </div>
+
+          {/* Desktop Layout */}
+          <div className="hidden sm:flex items-center justify-between">
+            <Button
+              variant="ghost"
+              onClick={onClose}
               className="flex items-center gap-2 text-muted-foreground hover:text-foreground"
             >
-              <LogOut className="w-4 h-4" />
-              Log out
+              <ArrowLeft className="w-4 h-4" />
+              Back to Home
             </Button>
-          )}
+
+            <div className="flex items-center gap-3">
+              <div className="w-10 h-10 bg-gradient-to-r from-primary to-neon-blue rounded-full flex items-center justify-center">
+                <Brain className="w-5 h-5 text-white" />
+              </div>
+              <div>
+                <h1 className="font-semibold text-lg">FitMind AI</h1>
+                <div className="text-sm text-muted-foreground flex items-center gap-1">
+                  <div className="w-2 h-2 bg-primary rounded-full animate-pulse"></div>
+                  {user ? "Chat History Enabled" : "Guest Mode"}
+                </div>
+              </div>
+            </div>
+
+            {user && (
+              <Button
+                variant="ghost"
+                onClick={async () => {
+                  await signOut();
+                  onClose();
+                }}
+                className="flex items-center gap-2 text-muted-foreground hover:text-foreground"
+              >
+                <LogOut className="w-4 h-4" />
+                Log out
+              </Button>
+            )}
+          </div>
         </div>
       </div>
 
       {/* Messages */}
-      <div className="flex-1 overflow-y-auto">
+      <div className="flex-1 overflow-y-auto pt-4 sm:pt-0">
         <div className="max-w-4xl mx-auto px-4 py-6">
           <div className="space-y-6">
             {messages.map((message, index) => (
