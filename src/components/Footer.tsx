@@ -91,13 +91,33 @@ const Footer = () => {
             <div className="flex items-start gap-3">
               <Shield className="w-5 h-5 text-primary mt-0.5 flex-shrink-0" />
               <div className="text-sm text-muted-foreground">
-                <p className="font-medium text-foreground mb-2">Important Medical Disclaimer</p>
-                <p>
-                  FitMind.AI is an AI-powered fitness assistant designed to provide general fitness guidance 
-                  and recommendations. It does not replace certified human trainers, medical professionals, 
-                  or healthcare providers. Always consult with qualified healthcare professionals before 
-                  starting any new fitness program, especially if you have pre-existing health conditions.
-                </p>
+                <p className="font-medium text-foreground mb-2">Important Medical & Legal Disclaimer</p>
+                <div className="space-y-3 text-sm">
+                  <p>
+                    FitMind.AI is an AI-powered fitness assistant that provides general fitness guidance, 
+                    recommendations, and educational content for informational purposes only. This platform 
+                    does not constitute medical advice, diagnosis, or treatment, nor does it replace 
+                    professional medical consultation, certified personal trainers, or licensed healthcare providers.
+                  </p>
+                  <p>
+                    <strong>Medical Consultation Required:</strong> Always consult with qualified healthcare 
+                    professionals before initiating any new fitness program, dietary changes, or supplement 
+                    regimen, particularly if you have pre-existing medical conditions, injuries, or health concerns.
+                  </p>
+                  <p>
+                    <strong>Third-Party Product Recommendations:</strong> FitMind.AI may recommend third-party 
+                    products, supplements, or services. We expressly disclaim any responsibility, liability, 
+                    or endorsement for the quality, safety, efficacy, authenticity, or legality of such products. 
+                    We are not liable for any fraudulent activities, misrepresentations, or illegal practices 
+                    conducted by recommended companies or their affiliates. Users are solely responsible for 
+                    conducting their own due diligence before purchasing any recommended products or services.
+                  </p>
+                  <p>
+                    <strong>Limitation of Liability:</strong> Use of this platform is at your own risk. 
+                    FitMind.AI and its operators shall not be held liable for any direct, indirect, incidental, 
+                    or consequential damages arising from the use of this service or reliance on its recommendations.
+                  </p>
+                </div>
               </div>
             </div>
           </div>
